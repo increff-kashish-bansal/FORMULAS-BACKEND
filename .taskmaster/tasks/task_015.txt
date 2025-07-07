@@ -1,0 +1,37 @@
+# Task ID: 15
+# Title: Develop End-to-End Test Suite with Benchmarks
+# Status: pending
+# Dependencies: 8, 12, 13
+# Priority: high
+# Description: Develop an end-to-end test suite using benchmark Excel test cases with known expected outputs.
+# Details:
+Select or create 5 benchmark Excel files representing real-world complexity (finance models, analytics sheets). For each benchmark, determine the expected output values after formula calculation. Implement tests that upload/process these files, generate and execute the script (Task 12), and compare the actual output against the known expected output (using checksum/hash validation of output JSONs or direct value comparison).
+
+# Test Strategy:
+Run the end-to-end test suite with the 5 benchmark files. Verify that the generated scripts execute successfully within the sandbox and produce outputs that match the pre-calculated expected results for each benchmark. Check that logs are generated correctly.
+
+# Subtasks:
+## 1. Implement Request Queue and Worker Pool [pending]
+### Dependencies: None
+### Description: Set up an asynchronous request queue and a pool of workers (threads or processes) to handle incoming file conversion requests.
+### Details:
+Use `asyncio` queues or similar mechanisms provided by FastAPI/Python. Define worker logic to pick up tasks from the queue. Consider using `concurrent.futures` or `asyncio` workers.
+
+## 2. Integrate Semaphore for Concurrency Control [pending]
+### Dependencies: 15.1
+### Description: Implement a semaphore or similar mechanism (e.g., `asyncio.Semaphore`) to limit the maximum number of concurrently executing conversion tasks to prevent resource exhaustion, aligning with NFR F21.
+### Details:
+Configure the semaphore limit based on expected load and available resources. Ensure workers acquire the semaphore before starting a task and release it upon completion.
+
+## 3. Adapt Conversion Logic for Background Processing [pending]
+### Dependencies: 15.1, 15.2
+### Description: Modify the existing file ingestion, parsing, and script generation logic to run as non-blocking background tasks submitted to the worker pool. Include test cases for concurrent uploads and high-load scenarios.
+### Details:
+Refactor the core conversion pipeline into a function suitable for execution by a worker. Add unit and integration tests specifically designed to simulate concurrent requests and high throughput.
+
+## 4. Implement Conversion Status Tracking [pending]
+### Dependencies: 15.3
+### Description: Develop a system to track the status (e.g., queued, processing, completed, failed) of each submitted conversion request and potentially provide a mechanism for reporting this status.
+### Details:
+Use an in-memory dictionary, a simple database, or a dedicated task queue system (if needed) to store the state of each request identified by a unique ID. Define states and transitions.
+

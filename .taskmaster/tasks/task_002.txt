@@ -1,0 +1,31 @@
+# Task ID: 2
+# Title: Implement File Upload and Temporary Storage
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Implement the file upload mechanism for both the CLI and REST API interfaces, handling incoming files and storing them temporarily.
+# Details:
+For the REST API, use FastAPI's `UploadFile` feature to accept POST requests with file data. For the CLI, use `argparse` or similar to accept a file path argument. Implement logic to save the uploaded/specified file to a temporary directory with a unique identifier. Ensure support for `.xlsx`, `.csv`, and `.tsv` extensions.
+
+# Test Strategy:
+Test file uploads via both CLI and API for each supported file type (.xlsx, .csv, .tsv). Verify that files are correctly received and stored temporarily with their original names or a unique identifier.
+
+# Subtasks:
+## 1. Implement Shared File Validation Utilities [pending]
+### Dependencies: None
+### Description: Create reusable functions for validating uploaded files, including checking file type (.xlsx, .csv, .tsv) based on extension/mime type and enforcing the file size limit (<10MB). Include error handling for invalid types and sizes.
+### Details:
+Implement validation logic as per F1 and F3. Write unit tests for validation functions covering valid/invalid file types and sizes.
+
+## 2. Implement CLI File Upload and Validation [pending]
+### Dependencies: 2.1
+### Description: Develop the CLI interface to accept a file path as input. Use the shared validation utilities (Subtask 1) to check the file before processing. Implement error handling for validation failures and file system errors. Include test cases for CLI file input.
+### Details:
+Implement CLI logic using argparse or typer (as per RULES.md). Integrate validation from Subtask 1. Add tests for CLI argument parsing and validation error handling.
+
+## 3. Implement API File Upload Endpoint with Validation [pending]
+### Dependencies: 2.1
+### Description: Create a REST API endpoint using FastAPI to accept file uploads via multipart form data. Use the shared validation utilities (Subtask 1) to check the uploaded file. Implement error handling for validation failures and API-specific issues. Include test cases for the API endpoint.
+### Details:
+Implement FastAPI endpoint as per F15. Handle multipart file uploads. Integrate validation from Subtask 1. Add integration tests for the API endpoint covering successful uploads and validation errors.
+

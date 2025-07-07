@@ -1,0 +1,73 @@
+# Task ID: 16
+# Title: Add Concurrency Handling for API
+# Status: pending
+# Dependencies: 2, 10, 12
+# Priority: medium
+# Description: Implement concurrency handling for the REST API to support multiple simultaneous file uploads and processing requests.
+# Details:
+Leverage FastAPI's asynchronous capabilities. Ensure that file processing, script generation, and execution logic are non-blocking or handled in background tasks/worker processes to allow the API to handle 10 concurrent requests/minute. Consider using a task queue if processing is lengthy.
+
+# Test Strategy:
+Use a load testing tool (e.g., `locust`, `ab`) to simulate 10+ concurrent API requests with file uploads. Monitor the API's response time and error rate. Verify that the system remains responsive and correctly processes concurrent requests without data corruption or significant performance degradation.
+
+# Subtasks:
+## 1. Analyze Blocking Operations [pending]
+### Dependencies: None
+### Description: Identify specific blocking I/O or CPU-bound operations within the existing file upload, parsing, script generation, and execution flow that prevent concurrency.
+### Details:
+Review existing code for synchronous file reads/writes, blocking calls to external processes (script execution), and CPU-intensive parsing/generation logic. Document identified bottlenecks and potential areas for asynchronous implementation or offloading.
+
+## 2. Refactor FastAPI Endpoint for Async Upload [pending]
+### Dependencies: None
+### Description: Modify the `/upload` endpoint to use `async def` and handle file streaming asynchronously, ensuring non-blocking file reception.
+### Details:
+Update the FastAPI endpoint definition to be asynchronous. Implement asynchronous file handling using `asyncio` compatible libraries or FastAPI's built-in async file handling capabilities. Ensure proper error handling for upload issues.
+
+## 3. Implement Asynchronous File Ingestion/Parsing [pending]
+### Dependencies: 16.1, 16.2
+### Description: Adapt the logic for reading and parsing uploaded files (e.g., Excel) to use asynchronous libraries or patterns, avoiding blocking calls within the API process.
+### Details:
+Refactor file reading and initial parsing logic (e.g., using `aiofiles` for file I/O, or adapting parsing libraries if async versions exist, or offloading parsing). Ensure this step is non-blocking within the main API event loop.
+
+## 4. Select and Integrate Task Queue [pending]
+### Dependencies: None
+### Description: Choose a suitable task queue (e.g., Celery with Redis/RabbitMQ) based on project needs and integrate it into the project structure.
+### Details:
+Evaluate task queue options considering reliability, scalability, ease of integration with FastAPI, and monitoring capabilities. Set up the chosen task queue broker and backend. Integrate the task queue client library into the project structure, adhering to code organization standards.
+
+## 5. Create Task Definitions for Processing/Execution [pending]
+### Dependencies: 16.3, 16.4
+### Description: Define specific tasks within the task queue system for formula parsing, Python script generation, and secure script execution.
+### Details:
+Wrap the existing (or refactored) logic for formula parsing, script generation, and secure execution into functions that can be registered as tasks with the chosen task queue. Define task parameters and return types.
+
+## 6. Develop Task Queue Worker Processes [pending]
+### Dependencies: 16.4, 16.5
+### Description: Implement worker processes that connect to the task queue, retrieve tasks, and execute the defined processing and execution logic securely and reliably.
+### Details:
+Set up worker processes that listen to the task queue. Configure workers to handle task execution, including error handling, logging, and resource management. Ensure secure execution environment is maintained within workers.
+
+## 7. Modify API to Enqueue Tasks and Return Task ID [pending]
+### Dependencies: 16.3, 16.6
+### Description: Update the `/upload` or processing endpoint to enqueue the necessary tasks to the queue and immediately return a unique task ID to the client.
+### Details:
+After initial async file ingestion/parsing (if done in API), call the task queue client to enqueue the subsequent processing/execution tasks. Capture the returned task ID and include it in the API response to the client.
+
+## 8. Implement Task Status Monitoring and Retrieval [pending]
+### Dependencies: 16.4, 16.6
+### Description: Develop logic to store and retrieve the status (e.g., pending, processing, completed, failed) and results/errors of tasks using the task queue's backend or a separate store.
+### Details:
+Utilize the task queue's built-in result backend or implement a separate mechanism (e.g., database table) to store task status, results, and error information associated with the task ID. Implement functions to query this information.
+
+## 9. Create API Endpoint for Status Check [pending]
+### Dependencies: 16.7, 16.8
+### Description: Add a new API endpoint (e.g., `/status/{task_id}`) that allows clients to query the status and results of their submitted tasks using the returned task ID.
+### Details:
+Implement a new FastAPI endpoint that accepts a task ID as a path parameter. Use the task status monitoring logic (Subtask 8) to retrieve the current status and results/errors for the given ID and return it in a structured API response.
+
+## 10. Implement Concurrent Load Testing and Optimization [pending]
+### Dependencies: 16.7, 16.9
+### Description: Design and execute load tests simulating 10 concurrent requests/minute using the 5 benchmark Excel files, analyze performance metrics, identify bottlenecks in the concurrent flow, and optimize the implementation.
+### Details:
+Use a load testing tool (e.g., Locust, JMeter) to simulate the required load. Test the full flow from upload/enqueue to status check. Monitor API response times, task queue performance, worker resource usage, and error rates. Optimize code or infrastructure based on results to meet performance thresholds.
+

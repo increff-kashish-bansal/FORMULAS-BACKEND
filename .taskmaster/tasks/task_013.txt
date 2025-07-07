@@ -1,0 +1,11 @@
+# Task ID: 13
+# Title: Develop Logging and Warning System
+# Status: pending
+# Dependencies: 1
+# Priority: medium
+# Description: Develop a comprehensive logging and warning system to record parsing issues, unsupported formulas, naming fallbacks, and execution details.
+# Details:
+Use Python's built-in `logging` module. Define different logging levels (INFO, WARNING, ERROR). Implement logging points throughout the parsing, naming, generation, and execution phases to capture relevant events, especially warnings about skipped elements, naming ambiguities, and unsupported features as specified in the PRD. Ensure logs can be written to a file (`log.txt`).
+
+# Test Strategy:
+Process test files designed to trigger various warnings (e.g., empty headers, unsupported formulas). Verify that the logging system captures these events correctly with appropriate messages and levels. Check that the log file (`log.txt`) is generated and contains the expected entries.

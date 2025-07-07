@@ -1,0 +1,11 @@
+# Task ID: 14
+# Title: Implement Unit Tests for Core Components
+# Status: pending
+# Dependencies: 4, 5, 8, 13
+# Priority: high
+# Description: Write unit tests for key components: formula extraction, variable naming logic, and Python code generation.
+# Details:
+Create isolated test cases for the functions responsible for parsing formulas using `formulas`, applying the variable naming rules, and generating Python code snippets. Use mock data representing parsed sheet structures and extracted formulas. Ensure tests cover edge cases and different scenarios outlined in the PRD.
+
+# Test Strategy:
+Run the unit test suite. Ensure all tests pass and achieve high code coverage for the core parsing, naming, and generation modules. Verify tests cover successful cases, edge cases, and expected error/warning conditions.

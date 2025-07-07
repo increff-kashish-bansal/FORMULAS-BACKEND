@@ -1,0 +1,61 @@
+# Task ID: 11
+# Title: Setup Secure Script Execution Environment
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Set up a secure environment for executing the generated Python scripts with resource limits and isolation.
+# Details:
+Research and implement a method for sandboxing script execution. Options include Docker containers with restricted capabilities (AppArmor/SECCOMP) or subprocesses with OS-level resource limits (CPU time, memory, no network access). Configure the environment to enforce the specified limits (30s CPU, 128MB RAM).
+
+# Test Strategy:
+Develop test scripts designed to exceed CPU time or memory limits, or attempt network access. Execute these scripts within the sandbox environment and verify that the resource limits are enforced and the script is terminated correctly without side effects or network access.
+
+# Subtasks:
+## 1. Implement Naming Hierarchy and Fallback [pending]
+### Dependencies: None
+### Description: Define and implement the hierarchy for generating variable names (e.g., header row, specific mapping row, default). Implement fallback strategies if the preferred source is unavailable or invalid.
+### Details:
+Specify the order of preference for name sources. Define fallback rules (e.g., use column index if header is empty). Add test cases for missing headers, missing mapping entries, and combinations.
+
+## 2. Detect and Resolve Duplicate Headers [pending]
+### Dependencies: 11.1
+### Description: Implement logic to identify columns with identical header names within a single sheet and modify subsequent duplicates to ensure uniqueness.
+### Details:
+Define the resolution strategy (e.g., appending a number or column index). Add test cases for multiple columns with the same header.
+
+## 3. Handle Python Keywords and Reserved Names [pending]
+### Dependencies: 11.1, 11.2
+### Description: Implement logic to check if a generated variable name is a Python keyword or reserved name and modify it to avoid conflicts.
+### Details:
+Include a list of Python keywords and reserved names to check against. Define the modification strategy (e.g., appending an underscore). Add test cases for common keywords (e.g., 'class', 'def', 'if') after applying hierarchy and duplicate resolution.
+
+## 4. Ensure Cross-Sheet Naming Consistency [pending]
+### Dependencies: 11.1, 11.2, 11.3
+### Description: Implement a mechanism to ensure that columns representing the same logical data across different sheets in the workbook are assigned consistent variable names.
+### Details:
+Define how columns are matched across sheets (e.g., by header name, by a mapping). Implement a global registry or mapping to track names assigned to logical columns. Add test cases for matching columns across sheets with varying headers or positions, ensuring the final name respects keyword handling and duplicate resolution.
+
+## 5. Handle Python Keywords and Reserved Names [pending]
+### Dependencies: None
+### Description: Implement logic to check generated variable names against Python's reserved keywords and built-in function names. If a conflict is found, modify the name (e.g., by appending an underscore or prefix) to avoid syntax errors.
+### Details:
+This involves maintaining a list of Python keywords and built-in names. Test cases should include headers like 'class', 'def', 'import', 'list', 'dict', etc., and verify that they are transformed into valid Python identifiers like 'class_', 'def_', 'import_', 'list_', 'dict_'.
+
+## 6. Implement Naming Hierarchy and Fallbacks [pending]
+### Dependencies: 11.5
+### Description: Develop the core logic for assigning variable names based on the defined hierarchy: Named Range > Header > cell_A1. Include fallback mechanisms for cases where Named Ranges or valid Headers are not available.
+### Details:
+Prioritize Named Ranges if they exist for a cell. If not, look for associated headers (considering common header patterns). If neither is found, default to the cell reference format (e.g., 'cell_A1'). Ensure names generated from headers follow the specified convention (snake_case, lowercase, '_' separator). Test cases should cover cells with Named Ranges, cells under clear headers, cells under ambiguous/merged headers (handled in a later task, but the fallback to header logic is here), and cells with no apparent header.
+
+## 7. Detect and Resolve Duplicate Headers/Names [pending]
+### Dependencies: 11.6
+### Description: Implement logic to detect when the naming process (especially from headers) results in duplicate variable names within the same scope (e.g., same sheet). Resolve duplicates by appending a unique suffix (e.g., row index or counter).
+### Details:
+This task builds on the header naming logic. It requires tracking generated names and identifying collisions. Resolution should follow the rule of appending the row index or a counter (e.g., 'revenue_q2_1', 'revenue_q2_2'). Test cases should include sheets with multiple columns having the exact same header text, or headers that resolve to the same snake_case name after cleaning.
+
+## 8. Ensure Cross-Sheet Naming Consistency [pending]
+### Dependencies: 11.6, 11.7
+### Description: Extend the naming logic to ensure that variables representing the same conceptual data (e.g., a column header 'Revenue') are named consistently across different sheets where possible, or that cross-sheet references correctly map to the appropriate sheet-scoped variable.
+### Details:
+This requires a mechanism to potentially map headers or named ranges across sheets. If a header 'Revenue' appears on 'Sheet1' and 'Sheet2', ideally the variable name should be consistent, or references should clearly indicate the sheet (e.g., 'Sheet1_revenue', 'Sheet2_revenue'). Test cases should involve workbooks with identical or similar column headers on multiple sheets, and formulas referencing cells on other sheets.
+

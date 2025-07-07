@@ -1,0 +1,43 @@
+# Task ID: 3
+# Title: Implement File Parsing for Supported Types
+# Status: pending
+# Dependencies: 2
+# Priority: high
+# Description: Develop the core logic for parsing uploaded files based on their type (.xlsx, .csv, .tsv) to read data from all sheets/sections.
+# Details:
+Use `pandas` with appropriate engines (`openpyxl` for .xlsx, built-in pandas readers for .csv/.tsv) to read data. For .xlsx, iterate through all sheets in the workbook. For .csv/.tsv, treat the single file as one sheet. Store the parsed data in a structured format (e.g., dictionary of pandas DataFrames, where keys are sheet names).
+
+# Test Strategy:
+Prepare test files for each supported type (.xlsx with multiple sheets, .csv, .tsv). Parse these files and verify that all sheets/data are read correctly into the expected data structure. Check for correct handling of different delimiters for .csv/.tsv.
+
+# Subtasks:
+## 1. Implement Excel File Parsing and Formula Identification [pending]
+### Dependencies: None
+### Description: Develop the module responsible for parsing .xls and .xlsx files using the 'formulas' library. Identify cells containing formulas and extract their raw string representation. Integrate logging for parsing activities and potential warnings.
+### Details:
+Utilize 'formulas.ExcelModel' for parsing. Handle different sheet types and structures within Excel files. Implement logic to iterate through cells and identify those marked as containing formulas by the library. Capture the raw formula string from identified cells. Adhere to project naming conventions and code organization standards. Implement logging for successful parsing, sheet processing, and initial formula identification.
+
+## 2. Implement CSV/TSV File Parsing and Potential Formula Identification [pending]
+### Dependencies: None
+### Description: Develop the module responsible for parsing .csv and .tsv files using 'pandas'. Identify cells containing strings that potentially represent formulas (e.g., starting with '='). Integrate logging for parsing activities.
+### Details:
+Use 'pandas.read_csv' with appropriate delimiters (comma, tab). Implement logic to iterate through DataFrame cells and identify strings that start with '=' as potential formulas. Note that CSV/TSV do not have native formula types like Excel, so this is based on string content. Adhere to project naming conventions and code organization standards. Implement logging for successful parsing and potential formula string identification.
+
+## 3. Implement Unified Formula Extraction and Data Preparation [pending]
+### Dependencies: 3.1, 3.2
+### Description: Develop the core logic to process the identified formula information from both Excel (Subtask 1) and CSV/TSV (Subtask 2) sources. Prepare the extracted data (cell reference, sheet name, formula string, source file) for inclusion in the unified data structure.
+### Details:
+Create a processing layer that accepts input from the Excel parsing module (Subtask 1) and the CSV/TSV parsing module (Subtask 2). Extract the necessary details (sheet name, cell address, raw formula string) in a consistent format. Handle the differences in how cell references and sheet names are provided by the underlying libraries/methods. Prepare data objects or dictionaries suitable for the unified structure defined in Subtask 4. Integrate logging for the extraction process.
+
+## 4. Design and Implement Unified Data Structure and Output Mechanism [pending]
+### Dependencies: 3.3
+### Description: Define and implement the data structure that will hold the extracted formula information from all supported file types (Excel, CSV, TSV). Implement the mechanism to output this unified data structure.
+### Details:
+Design a Python class or a standardized dictionary structure to represent each extracted formula instance. This structure must include fields for 'file_path', 'sheet_name', 'cell_address', 'formula_string', and 'error' (to capture issues during parsing/extraction). Ensure the structure is consistent regardless of the source file type. Implement a method or function to collect these instances and provide them as a list or similar aggregate structure. Adhere to project naming conventions and code organization standards.
+
+## 5. Implement Comprehensive Error Handling and Testing Suite [pending]
+### Dependencies: 3.1, 3.2, 3.3, 3.4
+### Description: Implement robust error handling for parsing issues (corrupted files, unsupported features) and extraction issues (invalid formulas, edge cases). Develop and execute a comprehensive testing suite, including unit tests (targeting 90%+ coverage), integration tests, benchmark tests using 5 specified Excel files, and tests for various edge cases (empty files, files with no formulas, malformed CSV/TSV formula strings).
+### Details:
+Implement try-except blocks to catch exceptions raised by 'formulas' and 'pandas' during parsing and by the extraction logic (Subtask 3). Define how errors are captured and stored in the 'error' field of the unified data structure (Subtask 4). Ensure logging captures detailed error information. Write unit tests for each function/method in modules developed in Subtasks 1, 2, 3, and 4, aiming for at least 90% code coverage. Create integration tests to verify the end-to-end flow from file ingestion to unified data structure output. Prepare 5 benchmark Excel files and test the extraction performance and correctness against them. Create test cases for edge scenarios like corrupted files, files with only data (no formulas), files with unusual characters in formulas, and CSV/TSV files with strings that might ambiguously start with '='. Document the error handling strategy and test coverage results.
+

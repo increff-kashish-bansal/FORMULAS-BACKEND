@@ -1,0 +1,186 @@
+# Product Requirements Document (PRD): Excel-to-Python Formula Converter
+
+## Overview
+
+This project aims to help data analysts, finance professionals, and client teams transition away from Excel by providing a tool that converts uploaded Excel files into clean, runnable Python scripts. The system extracts formulas using the [`formulas`](https://formulas.readthedocs.io/en/stable/) Python library and generates executable code reflecting the logic defined in the spreadsheets.
+
+## Goals and Objectives
+
+* **Enable seamless migration from Excel to Python** by translating formula logic.
+* **Reduce dependency on manual Excel workflows**, enhancing reproducibility and transparency.
+* **Deliver a CLI/API-based MVP** for internal or early client usage.
+* **Achieve high accuracy** in converting real-world finance and analytics sheets.
+
+## Scope
+
+### In Scope (MVP)
+
+* Upload support for `.xlsx`, `.csv`, and `.tsv` files
+* Parse **formulas only** from all sheets in the workbook
+* Auto-generate a **runnable Python script** using real variable names from cell labels
+* Provide CLI and REST API interfaces for file upload and script generation
+* Allow the generated script to be **executed within the application**
+* Graceful handling of unsupported formulas via placeholders
+
+### Out of Scope (MVP)
+
+* UI/frontend for uploads or code display
+* Handling of formatting, charts, VBA/macros
+* Partial sheet or range-specific conversion
+* Security or encryption features
+
+## User Personas / Target Audience
+
+1. **Data Analysts**: Users working in Excel who need repeatable, auditable Python code
+2. **Finance Professionals**: Spreadsheet-heavy users seeking automation for models
+3. **Client Teams**: Looking to integrate spreadsheet logic into their backend systems
+
+## Functional Requirements (MoSCoW Prioritization)
+
+### Must Have
+
+* Accept `.xlsx`, `.csv`, `.tsv` files via CLI or REST endpoint
+* Parse **all worksheets** in the file
+* Extract formulas using `formulas` library
+* Generate `.py` file output with:
+
+  * Placeholder substitution for unsupported formulas
+  * Real variable names from headers or labels
+
+### Should Have
+
+* Cross-sheet reference support
+* Logging and warnings for skipped elements
+* Consistent naming scheme for variables
+
+### Could Have
+
+* Execution engine that runs the script and returns output
+
+### Won’t Have (Now)
+
+* UI/Frontend
+* Support for formatting, charts, or macros
+* Partial sheet conversion
+* User authentication or access control
+
+## Non-Functional Requirements
+
+* **Performance**: Should process workbooks <10MB within 10 seconds
+* **Scalability**: Should handle 10 concurrent uploads/minute via FastAPI async workers
+* **Maintainability**: Codebase must follow modular structure with clear logging
+* **Deployment**: Hostable on Azure (VM or Azure App Service)
+* **Security**:
+
+  * Executed scripts will be limited to 30 seconds of CPU time, 128MB RAM, and no internet access
+  * Executions will run inside Docker containers using AppArmor/SECCOMP restrictions
+  * Alternatively, subprocesses with OS-level resource caps may be used for lightweight workloads
+
+## Technical Architecture
+
+### CLI/REST Flow
+
+* User uploads a file via CLI or API POST
+* Backend stores file temporarily and processes it
+
+### Processing Pipeline
+
+1. Parse file type and validate content
+2. Extract formulas using `formulas` (pinned at v1.2.2)
+3. Map formulas to variables
+4. Generate `.py` script with computation logic
+
+### Execution Flow
+
+* Run generated script using `exec()` inside Docker or subprocess (with guardrails)
+* Return output as JSON (API) or stdout/stderr (CLI)
+* Include downloadable `log.txt` file with all warnings, skipped formulas, and fallbacks
+
+## Variable Naming Logic
+
+* Hierarchy: Named Range > Header (1st row) > Cell Reference (`cell_A1`)
+* Ambiguities (e.g., merged headers) will be resolved by flattening and suffixing (e.g., `Revenue_Q2_1`)
+* If header cells are empty or malformed, system will fallback to `cell_<row><col>` format for that row and log a warning
+
+## Supported Formula Types (MVP)
+
+* Basic arithmetic (`+`, `-`, `*`, `/`, `^`)
+* Logical operations (`IF`, `AND`, `OR`, `NOT`)
+* Aggregations (`SUM`, `AVERAGE`, `MIN`, `MAX`)
+* Lookups (`VLOOKUP`, `HLOOKUP`) — *best effort only*
+
+## Known Limitations
+
+* Complex nested formulas may lose fidelity
+* External data links and macros are ignored
+* Some advanced Excel functions (e.g., `INDIRECT`, `OFFSET`) are not supported
+* Password-protected or corrupted files will be rejected
+
+## Output Format & Example
+
+* Output is a `.py` script with function definitions and main execution block
+* Example snippet:
+
+```python
+# Inputs
+a = 10
+b = 20
+
+# Derived Formula
+c = a + b
+
+print("Result:", c)
+```
+
+## Warning/Error Output
+
+* API responses will include JSON field `warnings[]` and `log_url`
+* CLI will display errors to `stderr` and write logs to `log.txt`
+
+## User Journey
+
+1. **User uploads a file** via CLI or REST call
+2. System reads all sheets, extracts formulas
+3. Python script is generated using named variables or cell headers
+4. Script is returned in response and optionally executed
+5. User receives output values and warning log (if any)
+
+## Success Metrics
+
+* ✅ 90%+ formula coverage across tested sheets
+* ✅ <10s average conversion time
+* ✅ Positive usability feedback from 3+ client teams
+* ✅ Ability to successfully convert and run 3 complex real-world finance models
+* ✅ 95%+ API calls succeed with HTTP 200 within 3s (excluding large file cases)
+* ✅ 0 critical sandbox escape reports in staging
+* ✅ Match expected outputs for 5 benchmark test cases
+
+## Testing and QA Plan
+
+* Unit tests for formula extraction, naming logic, and Python code generation
+* End-to-end test suite using known Excel test cases with expected output values
+* Manual testing with client-provided real-world spreadsheets
+* Concurrency tests simulating 10+ uploads/minute
+* Race condition protection via locking or queuing
+* Malformed file handling (e.g., encrypted, corrupted, empty headers)
+* Each generated script will be executed and its outputs matched against a known correct result for 5 benchmark sheets using checksum/hash validation of output JSONs
+
+## Timeline
+
+| Milestone                        | Target Date |
+| -------------------------------- | ----------- |
+| MVP CLI/API core logic           | July 7      |
+| Azure deployment + execution API | July 7      |
+| Client testing & feedback loop   | July 8-10   |
+| Enhancements post feedback       | July 11+    |
+
+## Open Questions / Assumptions
+
+* Assumes all users have valid, formula-containing sheets
+* No frontend or auth layer in initial MVP
+* Will revisit sheet-specific selection or preview in future releases
+
+---
+
+**Prepared by:** ChatGPT (Product PM)
+**Date:** July 7, 2025

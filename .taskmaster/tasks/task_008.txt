@@ -1,0 +1,11 @@
+# Task ID: 8
+# Title: Develop Python Script Generation Core Logic
+# Status: pending
+# Dependencies: 4, 5, 6, 7
+# Priority: high
+# Description: Develop the core logic for generating the runnable Python script from the extracted formulas and variable names.
+# Details:
+Iterate through the extracted formulas and their corresponding variable names. Translate the formula logic (using the `formulas` library's internal representation or by mapping common functions) into Python code. Structure the script with input variable assignments (using names from Task 5), followed by derived variable calculations based on the formulas. Include necessary imports. Handle the order of calculations to respect dependencies between cells/formulas.
+
+# Test Strategy:
+Generate scripts from test sheets with various formulas (arithmetic, logical, aggregations, lookups, cross-sheet). Manually review the generated Python code to ensure it accurately reflects the Excel logic, uses the correct variable names, and handles dependencies reasonably. Verify placeholders for unsupported formulas are present.

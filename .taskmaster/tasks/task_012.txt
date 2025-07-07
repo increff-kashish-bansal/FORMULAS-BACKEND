@@ -1,0 +1,43 @@
+# Task ID: 12
+# Title: Implement Script Execution Logic
+# Status: pending
+# Dependencies: 8, 11
+# Priority: high
+# Description: Implement the logic to execute the generated Python script within the secure sandbox environment and capture its output.
+# Details:
+Take the generated script (from Task 8) and execute it using the sandboxing mechanism set up in Task 11. Capture standard output and standard error streams. Handle execution timeouts or resource limit violations gracefully. Format the captured output (e.g., print statements) into a structured format like JSON for the API or plain text for the CLI.
+
+# Test Strategy:
+Generate scripts from test sheets that produce specific outputs via print statements. Execute these scripts in the sandbox and verify that the output is correctly captured and formatted. Test execution with scripts that should trigger resource limits or errors and ensure graceful handling.
+
+# Subtasks:
+## 1. Create Test Excel Fixtures [pending]
+### Dependencies: None
+### Description: Design and create a set of Excel files (.xlsx, .csv, .tsv) containing various formula types, cross-sheet references, named ranges, headers, and edge cases with documented expected outputs.
+### Details:
+Create test files covering arithmetic (+, -, *, /), logical (IF, AND, OR), aggregation (SUM, AVERAGE, COUNT), and lookup (VLOOKUP, HLOOKUP) formulas. Include specific sheets/cases for cross-sheet references (F7), named ranges (F6), ambiguous headers (F10), and edge cases (e.g., errors, empty cells, unsupported formulas F5). Document the expected Python code output and/or execution results for each test case. Aim for at least 5 benchmark files as specified in RULES.md.
+
+## 2. Implement Tests for Basic Formula Types [pending]
+### Dependencies: 12.1
+### Description: Write tests to verify the correct conversion of basic arithmetic, logical, aggregation, and lookup formulas from Excel to Python using the created test fixtures.
+### Details:
+Use the fixtures from Subtask 1. Implement tests that parse the Excel files (F1, F2, F4) and assert that the generated Python code (F8) correctly represents the original formula logic. Verification methods include comparing generated Python code snippets against expected patterns and potentially executing the generated code in a sandboxed environment (F12, F13) and comparing results against expected values documented in the fixtures. Ensure coverage for F5 (unsupported placeholders) and F6 (variable naming from headers/named ranges).
+
+## 3. Implement Tests for Cross-Sheet References and Edge Cases [pending]
+### Dependencies: 12.1, 12.2
+### Description: Write tests specifically targeting cross-sheet references, named ranges, ambiguous headers, and other edge cases identified in the fixtures.
+### Details:
+Use the fixtures from Subtask 1 and the testing framework from Subtask 2. Implement tests to verify correct handling of cross-sheet references (F7), variable naming from named ranges/headers (F6, F10), and graceful handling/logging of edge cases like unsupported formulas (F5) or errors (F17, F18, F19). Verification methods include checking generated Python code for correct references/variable names and verifying log/warning outputs against expected messages.
+
+## 4. Implement CLI Interface Tests [pending]
+### Dependencies: 12.1, 12.2, 12.3
+### Description: Write tests to verify the functionality of the command-line interface, including file ingestion, processing, and output generation.
+### Details:
+Use the test fixtures from Subtask 1 and the core conversion logic tested in Subtasks 2 and 3. Implement tests that invoke the CLI (F14) with different file types (.xlsx, .csv, .tsv - F1) and options (e.g., `--run` F12). Verification methods include checking the CLI output (stdout, stderr - F19), verifying that the generated Python file (F16) is created correctly, and potentially comparing execution results if the `--run` option is used (F12, F13). Test file size limits (F3).
+
+## 5. Implement API Interface Tests [pending]
+### Dependencies: 12.1, 12.2, 12.3
+### Description: Write tests to verify the functionality of the REST API interface, including file upload, processing, and JSON response generation.
+### Details:
+Use the test fixtures from Subtask 1 and the core conversion logic tested in Subtasks 2 and 3. Implement tests that send file POST requests to the API endpoint (F15). Verification methods include checking the HTTP response status code (e.g., 200 OK), verifying the structure and content of the JSON response (F15), including the warnings array (F18) and the generated Python code/download link (F16). Test file size limits (F3) and concurrency handling (F21).
+

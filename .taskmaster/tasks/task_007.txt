@@ -1,0 +1,11 @@
+# Task ID: 7
+# Title: Implement Unsupported Formula Placeholders
+# Status: pending
+# Dependencies: 4
+# Priority: medium
+# Description: Implement the handling of unsupported formulas by substituting them with placeholder values or comments in the generated Python script.
+# Details:
+Identify formulas that the `formulas` library cannot parse or that are explicitly out of scope (e.g., `INDIRECT`, `OFFSET`, external links). For such formulas, insert a clear placeholder (e.g., a comment indicating the original formula and its location, or a default value like `None` or `0`) in the generated Python script. Log a warning for each unsupported formula encountered.
+
+# Test Strategy:
+Create test sheets containing known unsupported formulas. Verify that these formulas are identified during parsing and replaced with the defined placeholders in the generated script. Check that corresponding warnings are added to the log.

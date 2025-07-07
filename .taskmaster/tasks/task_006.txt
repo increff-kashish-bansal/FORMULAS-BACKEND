@@ -1,0 +1,11 @@
+# Task ID: 6
+# Title: Handle Cross-Sheet References
+# Status: pending
+# Dependencies: 4, 5
+# Priority: medium
+# Description: Add support for handling cross-sheet references within formulas.
+# Details:
+When parsing formulas using the `formulas` library, identify references that point to cells in other sheets (e.g., `Sheet2!A1`). Ensure the variable naming logic (Task 5) can correctly generate names for these referenced cells in other sheets. The script generation (Task 8) must then correctly link these cross-sheet variables.
+
+# Test Strategy:
+Create test .xlsx files with formulas referencing cells in other sheets. Verify that the parser correctly identifies these references and that the naming logic generates appropriate variable names for the referenced cells in the target sheets.
