@@ -1,0 +1,11 @@
+# Task ID: 18
+# Title: Refine API Output Format
+# Status: pending
+# Dependencies: 13, 15
+# Priority: medium
+# Description: Refine API output format to include execution results, warnings, and log file URL.
+# Details:
+Structure the API JSON response to include the generated code (or URL), execution stdout/stderr, a list of warnings, and a URL to download the full log file.
+
+# Test Strategy:
+Execute a script via API that produces output and warnings. Verify the JSON response contains all expected fields and data.

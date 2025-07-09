@@ -1,31 +1,25 @@
 # Task ID: 2
-# Title: Implement File Upload and Temporary Storage
-# Status: pending
+# Title: Install Core Dependencies (`xlcalculator`, FastAPI)
+# Status: done
 # Dependencies: 1
 # Priority: high
-# Description: Implement the file upload mechanism for both the CLI and REST API interfaces, handling incoming files and storing them temporarily.
+# Description: Install necessary core dependencies, including `xlcalculator` and potentially a web framework like FastAPI.
 # Details:
-For the REST API, use FastAPI's `UploadFile` feature to accept POST requests with file data. For the CLI, use `argparse` or similar to accept a file path argument. Implement logic to save the uploaded/specified file to a temporary directory with a unique identifier. Ensure support for `.xlsx`, `.csv`, and `.tsv` extensions.
+Use the chosen dependency manager (Poetry/Pipenv/pip) to add `xlcalculator` and `fastapi` (or similar async framework) to the project dependencies. Ensure dependencies are locked.
 
 # Test Strategy:
-Test file uploads via both CLI and API for each supported file type (.xlsx, .csv, .tsv). Verify that files are correctly received and stored temporarily with their original names or a unique identifier.
+Verify dependencies are installed and importable in a test script.
 
 # Subtasks:
-## 1. Implement Shared File Validation Utilities [pending]
+## 1. Choose dependency manager and initialize project [done]
 ### Dependencies: None
-### Description: Create reusable functions for validating uploaded files, including checking file type (.xlsx, .csv, .tsv) based on extension/mime type and enforcing the file size limit (<10MB). Include error handling for invalid types and sizes.
+### Description: Select a Python dependency manager (Poetry, Pipenv, or pip) and perform the initial project setup or environment creation.
 ### Details:
-Implement validation logic as per F1 and F3. Write unit tests for validation functions covering valid/invalid file types and sizes.
+Consider project needs and team preference when choosing between Poetry, Pipenv, or standard pip with requirements files. Execute the necessary command to initialize the project or environment.
 
-## 2. Implement CLI File Upload and Validation [pending]
+## 2. Install dependencies and lock versions [done]
 ### Dependencies: 2.1
-### Description: Develop the CLI interface to accept a file path as input. Use the shared validation utilities (Subtask 1) to check the file before processing. Implement error handling for validation failures and file system errors. Include test cases for CLI file input.
+### Description: Install the `xlcalculator` and `fastapi` libraries using the chosen dependency manager and generate a lock file to record exact versions.
 ### Details:
-Implement CLI logic using argparse or typer (as per RULES.md). Integrate validation from Subtask 1. Add tests for CLI argument parsing and validation error handling.
-
-## 3. Implement API File Upload Endpoint with Validation [pending]
-### Dependencies: 2.1
-### Description: Create a REST API endpoint using FastAPI to accept file uploads via multipart form data. Use the shared validation utilities (Subtask 1) to check the uploaded file. Implement error handling for validation failures and API-specific issues. Include test cases for the API endpoint.
-### Details:
-Implement FastAPI endpoint as per F15. Handle multipart file uploads. Integrate validation from Subtask 1. Add integration tests for the API endpoint covering successful uploads and validation errors.
+Use the appropriate command for the selected manager (e.g., `poetry add`, `pipenv install`, `pip install` followed by locking) to add `xlcalculator` and `fastapi`. Ensure a lock file (e.g., `poetry.lock`, `Pipfile.lock`, `requirements.lock`) is created or updated.
 

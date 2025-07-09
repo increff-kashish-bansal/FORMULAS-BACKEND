@@ -2,25 +2,29 @@
 
 ## Overview
 
-This project aims to help data analysts, finance professionals, and client teams transition away from Excel by providing a tool that converts uploaded Excel files into clean, runnable Python scripts. The system extracts formulas using the [`formulas`](https://formulas.readthedocs.io/en/stable/) Python library and generates executable code reflecting the logic defined in the spreadsheets.
+This project aims to help data analysts, finance professionals, and client teams transition away from Excel by providing a tool that converts uploaded Excel files into clean, runnable Python scripts. The system leverages [`xlcalculator`](https://github.com/bradbase/xlcalculator) to parse and evaluate Excel formulas internally, and uses that evaluation to generate Python code where possible. For formulas that cannot be statically translated, `xlcalculator` will be used as a runtime evaluator.
 
 ## Goals and Objectives
 
-* **Enable seamless migration from Excel to Python** by translating formula logic.
+* **Enable seamless migration from Excel to Python** by extracting and evaluating formula logic.
 * **Reduce dependency on manual Excel workflows**, enhancing reproducibility and transparency.
 * **Deliver a CLI/API-based MVP** for internal or early client usage.
-* **Achieve high accuracy** in converting real-world finance and analytics sheets.
+* **Leverage `xlcalculator` to reduce implementation effort**, while still outputting human-readable Python code where feasible.
 
 ## Scope
 
 ### In Scope (MVP)
 
 * Upload support for `.xlsx`, `.csv`, and `.tsv` files
-* Parse **formulas only** from all sheets in the workbook
-* Auto-generate a **runnable Python script** using real variable names from cell labels
-* Provide CLI and REST API interfaces for file upload and script generation
-* Allow the generated script to be **executed within the application**
-* Graceful handling of unsupported formulas via placeholders
+* Parse and evaluate **formulas only** from all sheets in the workbook
+* Use `xlcalculator` to:
+
+  * Evaluate formulas internally
+  * Extract dependency relationships for generating readable output code
+* Auto-generate a **runnable Python script**, optionally using `xlcalculator` API calls for dynamic formula resolution
+* Provide CLI and REST API interfaces for file upload, code generation, and evaluation
+* Allow generated code to be **executed within the application** securely
+* Graceful handling of unsupported or complex formulas via placeholder comments or direct `xlcalculator` bindings
 
 ### Out of Scope (MVP)
 
@@ -40,130 +44,132 @@ This project aims to help data analysts, finance professionals, and client teams
 ### Must Have
 
 * Accept `.xlsx`, `.csv`, `.tsv` files via CLI or REST endpoint
-* Parse **all worksheets** in the file
-* Extract formulas using `formulas` library
+* Use `xlcalculator` to parse formulas and evaluate values
 * Generate `.py` file output with:
 
-  * Placeholder substitution for unsupported formulas
-  * Real variable names from headers or labels
+  * Placeholder substitution for unsupported logic
+  * Variable names inferred from headers or labels
 
 ### Should Have
 
 * Cross-sheet reference support
-* Logging and warnings for skipped elements
-* Consistent naming scheme for variables
+* Logging and warnings for skipped elements or evaluated fallbacks
+* Consistent naming scheme for variables (aligned with Excel naming)
 
 ### Could Have
 
-* Execution engine that runs the script and returns output
+* Option to keep formulas live via `xlcalculator` rather than translating to static Python expressions
+* Execution engine that runs the generated script and returns evaluated outputs
 
 ### Won’t Have (Now)
 
 * UI/Frontend
-* Support for formatting, charts, or macros
-* Partial sheet conversion
-* User authentication or access control
+* Full fidelity support for Excel formatting, charts, macros, or VBA
+* Partial sheet/range selection or visual formula editing
 
 ## Non-Functional Requirements
 
 * **Performance**: Should process workbooks <10MB within 10 seconds
-* **Scalability**: Should handle 10 concurrent uploads/minute via FastAPI async workers
-* **Maintainability**: Codebase must follow modular structure with clear logging
-* **Deployment**: Hostable on Azure (VM or Azure App Service)
-* **Security**:
+* **Scalability**: Handle 10+ concurrent uploads/minute via async FastAPI
+* **Maintainability**: Modular, testable Python architecture with logs and structured error handling
+* **Deployment**: Azure-hosted VM/App Service
+* **Security**: Sandbox execution
 
-  * Executed scripts will be limited to 30 seconds of CPU time, 128MB RAM, and no internet access
-  * Executions will run inside Docker containers using AppArmor/SECCOMP restrictions
-  * Alternatively, subprocesses with OS-level resource caps may be used for lightweight workloads
+  * Max 30s CPU, 128MB RAM, no internet access
+  * Docker with AppArmor/SECCOMP or subprocess with `resource` limits
 
 ## Technical Architecture
 
 ### CLI/REST Flow
 
-* User uploads a file via CLI or API POST
-* Backend stores file temporarily and processes it
+* User uploads a file (CLI/REST)
+* Server stores and validates file
+* Backend uses `xlcalculator` to evaluate the workbook
 
 ### Processing Pipeline
 
-1. Parse file type and validate content
-2. Extract formulas using `formulas` (pinned at v1.2.2)
-3. Map formulas to variables
-4. Generate `.py` script with computation logic
+1. Validate file type and size
+2. Load file and extract workbook structure
+3. Use `xlcalculator` to evaluate and resolve formulas
+4. Generate Python code by combining static translation and embedded runtime calls (if needed)
 
 ### Execution Flow
 
-* Run generated script using `exec()` inside Docker or subprocess (with guardrails)
-* Return output as JSON (API) or stdout/stderr (CLI)
-* Include downloadable `log.txt` file with all warnings, skipped formulas, and fallbacks
+* Evaluate via `exec()` in sandboxed subprocess or container
+* Return stdout/stderr (CLI) or structured JSON (API)
+* Include downloadable `log.txt` with warnings, skipped cells, or runtime fallbacks
 
 ## Variable Naming Logic
 
-* Hierarchy: Named Range > Header (1st row) > Cell Reference (`cell_A1`)
-* Ambiguities (e.g., merged headers) will be resolved by flattening and suffixing (e.g., `Revenue_Q2_1`)
-* If header cells are empty or malformed, system will fallback to `cell_<row><col>` format for that row and log a warning
+* Hierarchy: Named Range > Header > Cell Reference (e.g., `cell_A1`)
+* Fallbacks used for missing/merged/malformed headers
+* Logs include clarification when variables are inferred from cell addresses
 
 ## Supported Formula Types (MVP)
 
-* Basic arithmetic (`+`, `-`, `*`, `/`, `^`)
-* Logical operations (`IF`, `AND`, `OR`, `NOT`)
-* Aggregations (`SUM`, `AVERAGE`, `MIN`, `MAX`)
-* Lookups (`VLOOKUP`, `HLOOKUP`) — *best effort only*
+* All formulas supported by `xlcalculator`, including:
+
+  * Math: `SUM`, `PRODUCT`, `ROUND`, etc.
+  * Logic: `IF`, `AND`, `OR`, `NOT`
+  * Lookup: `VLOOKUP`, `INDEX`, `MATCH`
+  * String/date/time functions (partial)
 
 ## Known Limitations
 
-* Complex nested formulas may lose fidelity
-* External data links and macros are ignored
-* Some advanced Excel functions (e.g., `INDIRECT`, `OFFSET`) are not supported
-* Password-protected or corrupted files will be rejected
+* Generated Python code may fall back to runtime `xlcalculator` API for complex expressions
+* No AST-based translation; semantic gaps may remain between Excel logic and output Python
+* Macros/VBA, charts, and visual formatting are not interpreted
+* External links, shared workbooks, and password protection are unsupported
 
 ## Output Format & Example
 
-* Output is a `.py` script with function definitions and main execution block
-* Example snippet:
+* Outputs `.py` script per uploaded file
+* Static Python where possible, embedded runtime evaluation where needed:
 
 ```python
-# Inputs
-a = 10
-b = 20
+from xlcalculator import ModelCompiler, Evaluator
 
-# Derived Formula
-c = a + b
+# Load model from .xlsx
+model = ModelCompiler().read_and_parse_archive("my_sheet.xlsx")
+evaluator = Evaluator(model)
 
-print("Result:", c)
+# Example static inputs
+revenue = 10000
+cost = 7000
+
+# Runtime formula (if too complex for direct translation)
+profit = evaluator.evaluate("Sheet1!C2")  # Assuming C2 contains =A2-B2
+print("Profit:", profit)
 ```
 
 ## Warning/Error Output
 
-* API responses will include JSON field `warnings[]` and `log_url`
-* CLI will display errors to `stderr` and write logs to `log.txt`
+* CLI: stderr + `log.txt`
+* API: JSON with `warnings[]`, `log_url`, and execution output summary
 
 ## User Journey
 
-1. **User uploads a file** via CLI or REST call
-2. System reads all sheets, extracts formulas
-3. Python script is generated using named variables or cell headers
-4. Script is returned in response and optionally executed
-5. User receives output values and warning log (if any)
+1. User uploads a file via CLI/API
+2. Backend processes and evaluates it using `xlcalculator`
+3. System generates `.py` script — static and/or runtime-evaluated
+4. Output is returned and optionally executed
+5. Logs and evaluation results are returned/downloadable
 
 ## Success Metrics
 
-* ✅ 90%+ formula coverage across tested sheets
-* ✅ <10s average conversion time
-* ✅ Positive usability feedback from 3+ client teams
-* ✅ Ability to successfully convert and run 3 complex real-world finance models
-* ✅ 95%+ API calls succeed with HTTP 200 within 3s (excluding large file cases)
-* ✅ 0 critical sandbox escape reports in staging
-* ✅ Match expected outputs for 5 benchmark test cases
+* 90%+ formula coverage across real-world test files
+* <10s processing time for files <10MB
+* 95%+ API reliability (HTTP 200 within 3s)
+* 0 sandbox escapes or security incidents in staging
+* Matched output vs Excel reference for 5 benchmark sheets
 
 ## Testing and QA Plan
 
-* Unit tests for formula extraction, naming logic, and Python code generation
-* End-to-end test suite using known Excel test cases with expected output values
-* Manual testing with client-provided real-world spreadsheets
-* Concurrency tests simulating 10+ uploads/minute
-* Race condition protection via locking or queuing
-* Malformed file handling (e.g., encrypted, corrupted, empty headers)
-* Each generated script will be executed and its outputs matched against a known correct result for 5 benchmark sheets using checksum/hash validation of output JSONs
+* Unit tests for file handling, evaluation, and naming logic
+* Integration tests for `.xlsx`, `.csv`, `.tsv` input files
+* End-to-end: load file → evaluate → generate → run → compare
+* Benchmark: hashed/expected output comparison for 5 client-style sheets
+* Error path tests: malformed, passworded, empty headers
 
 ## Timeline
 
@@ -176,9 +182,9 @@ print("Result:", c)
 
 ## Open Questions / Assumptions
 
-* Assumes all users have valid, formula-containing sheets
-* No frontend or auth layer in initial MVP
-* Will revisit sheet-specific selection or preview in future releases
+* Output code will mix static translation and runtime evaluation when needed
+* All sheets will be parsed — selective conversion is deferred
+* No frontend/UI planned for MVP
 
 ---
 

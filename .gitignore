@@ -27,3 +27,30 @@ node_modules/
 # Task files
 # tasks.json
 # tasks/ 
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python/
+env/
+venv/
+*.env
+.env
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
+# Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+# OS
+.DS_Store
+.Trash/
+Thumbs.db 

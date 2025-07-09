@@ -1,0 +1,11 @@
+# Task ID: 20
+# Title: Setup Azure Deployment and Deploy Application
+# Status: pending
+# Dependencies: 19
+# Priority: high
+# Description: Set up Azure deployment environment (VM/App Service) and deploy the application.
+# Details:
+Configure an Azure VM or App Service. Set up necessary networking and security groups. Deploy the FastAPI application. Ensure the sandbox environment is correctly configured and functional in the cloud.
+
+# Test Strategy:
+Access the deployed API/CLI endpoint. Perform end-to-end tests with file upload, conversion, and execution. Verify performance and sandbox security.

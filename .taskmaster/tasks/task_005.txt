@@ -1,11 +1,31 @@
 # Task ID: 5
-# Title: Develop Variable Naming Logic
-# Status: pending
+# Title: Extract Formula Dependency Relationships
+# Status: done
 # Dependencies: 4
-# Priority: high
-# Description: Implement the logic to determine variable names for cells based on the specified hierarchy: Named Range > Header (1st row) > Cell Reference.
+# Priority: medium
+# Description: Develop the logic to extract formula dependency relationships from the `xlcalculator` model.
 # Details:
-For each cell containing a formula or value that will be referenced: Check if it has a defined Excel Named Range. If not, check if it's in a column with a header in the first row. If neither, use the cell reference format (e.g., `cell_A1`). Handle ambiguities like merged headers by flattening and suffixing (e.g., `Revenue_Q2_1`). Log warnings for empty or malformed headers leading to fallback.
+Analyze the `xlcalculator` model object to understand which cells/formulas depend on others. This information is crucial for generating ordered Python code.
 
 # Test Strategy:
-Create test sheets covering all naming scenarios: named ranges, clear headers, merged headers, empty headers, and no clear headers. Verify that the generated variable names match the expected output for each case according to the specified hierarchy and ambiguity rules. Check that warnings are logged correctly for fallbacks.
+Use a test workbook with simple dependencies. Verify the extracted dependency graph matches expectations.
+
+# Subtasks:
+## 1. Understand xlcalculator Model Structure [done]
+### Dependencies: None
+### Description: Research and understand how `xlcalculator` internally represents cell and formula dependencies within its model objects.
+### Details:
+Research and understand how `xlcalculator` internally represents cell and formula dependencies within its model objects.
+
+## 2. Identify Dependency Extraction Methods [done]
+### Dependencies: 5.1
+### Description: Identify the specific attributes or methods within the `xlcalculator` model objects that expose cell and formula dependency information.
+### Details:
+
+
+## 3. Implement Logic to Traverse Dependencies [done]
+### Dependencies: 5.2
+### Description: Develop code to traverse the dependency graph provided by `xlcalculator` to determine the correct order of formula evaluation.
+### Details:
+
+

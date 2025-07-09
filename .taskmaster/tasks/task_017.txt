@@ -1,73 +1,25 @@
 # Task ID: 17
-# Title: Implement Robust Malformed File Handling
+# Title: Add Option for Live Formula Translation
 # Status: pending
-# Dependencies: 2, 3
-# Priority: medium
-# Description: Implement robust handling for malformed, corrupted, or password-protected input files.
+# Dependencies: 9
+# Priority: low
+# Description: Add an option to the code generation to keep formulas 'live' via `xlcalculator` calls instead of static translation.
 # Details:
-Add checks during the file upload (Task 2) and parsing (Task 3) stages to detect invalid file formats, corruption, or password protection. Gracefully reject such files, return appropriate error messages via CLI/API, and log the event. Use libraries like `openpyxl` or `pandas` error handling for this.
+Introduce a flag (CLI/API parameter) that, when enabled, forces all formula translations to use `evaluator.evaluate()` calls in the generated script, even for simple formulas.
 
 # Test Strategy:
-Prepare test files that are corrupted, password-protected, or have incorrect extensions/formats. Attempt to upload and process these files via CLI and API. Verify that the system rejects them gracefully, provides clear error messages to the user, and logs the rejection.
+Generate code with the 'live formula' option enabled. Verify all formulas are translated to `evaluator.evaluate()` calls.
 
 # Subtasks:
-## 1. Define Malformed File Error Types [pending]
+## 1. Add force_evaluator option to API and CLI [pending]
 ### Dependencies: None
-### Description: Define specific error codes or types within the application's error handling framework to represent different kinds of malformed files (e.g., invalid format, corrupted content, password protected).
+### Description: Modify the backend API request schema and the CLI argument parser to accept a new boolean option, e.g., `force_evaluator_evaluation`, which signals whether to force evaluation via `xlcalculator.evaluator.evaluate()`.
 ### Details:
-Create distinct error classes or enums for 'InvalidFileFormatError', 'FileCorruptionError', and 'PasswordProtectedError'. Ensure these integrate with the existing error handling architecture as per RULES.MD.
+Define the new parameter name, type (boolean), default value (false), and add necessary documentation or help text for both API and CLI interfaces.
 
-## 2. Implement File Format Validation [pending]
+## 2. Implement conditional code generation based on force_evaluator option [pending]
 ### Dependencies: 17.1
-### Description: Implement logic to validate the file format during the initial upload stage (related to Task 2). This should check file extensions and potentially basic file headers/magic bytes to ensure it's a likely Excel file (.xlsx).
+### Description: Update the code generation logic in the backend to check the value of the `force_evaluator_evaluation` option. If true, modify the formula translation process to generate code that explicitly uses `xlcalculator.evaluator.evaluate()` for all formulas, bypassing static translation attempts.
 ### Details:
-Add checks in the file upload handler to verify the uploaded file's extension and potentially perform a basic check on the file's content signature if feasible and performant. If validation fails, raise the appropriate error type defined in Subtask 1.
-
-## 3. Implement File Corruption Detection [pending]
-### Dependencies: 17.1
-### Description: Implement logic to detect file corruption during the initial read or loading process using library features (e.g., `openpyxl`'s error handling during load).
-### Details:
-Wrap the file loading operation (e.g., `openpyxl.load_workbook`) in a try-except block to catch exceptions indicative of file corruption. If a corruption error is detected, raise the appropriate error type defined in Subtask 1.
-
-## 4. Implement Password Protection Detection [pending]
-### Dependencies: 17.1
-### Description: Implement logic to detect if an uploaded file is password protected during the initial read or loading process using library features.
-### Details:
-Use library features (e.g., checking specific exceptions raised by `openpyxl` or `pandas` when trying to open a password-protected file) to identify password protection. If detected, raise the appropriate error type defined in Subtask 1.
-
-## 5. Integrate Checks into File Upload Handler [pending]
-### Dependencies: 17.2, 17.3, 17.4
-### Description: Integrate the format validation (Subtask 2), corruption detection (Subtask 3), and password protection detection (Subtask 4) into the main file upload processing flow (Task 2).
-### Details:
-Modify the file upload handler to sequentially perform the checks implemented in Subtasks 2, 3, and 4. If any check fails, the process should stop, and the detected error should be propagated.
-
-## 6. Refine Parsing Stage Error Handling [pending]
-### Dependencies: 17.1, 17.5
-### Description: Enhance the error handling within the file parsing logic (Task 3) to gracefully handle errors that might occur during detailed parsing, even if initial checks passed (e.g., invalid cell data, structural issues within valid format).
-### Details:
-Review and update the parsing code (Task 3) to include robust try-except blocks around operations that might fail due to unexpected data or structure. Map these parsing-specific errors to appropriate internal error types, potentially extending the types defined in Subtask 1 if needed.
-
-## 7. Implement CLI Error Reporting for Malformed Files [pending]
-### Dependencies: 17.5, 17.6
-### Description: Design and implement the mechanism for reporting malformed file errors to the user via the Command Line Interface (CLI).
-### Details:
-Modify the CLI interface to catch the specific malformed file errors propagated from the upload (Subtask 5) and parsing (Subtask 6) stages. Display clear, user-friendly error messages indicating the type of issue (invalid format, corrupted, password protected) and that the file was rejected.
-
-## 8. Implement API Error Reporting for Malformed Files [pending]
-### Dependencies: 17.5, 17.6
-### Description: Design and implement the mechanism for reporting malformed file errors via the API interface.
-### Details:
-Modify the API endpoints handling file upload/processing to catch the specific malformed file errors. Return appropriate HTTP status codes (e.g., 400 Bad Request) and a structured JSON response body detailing the error type and message, adhering to API error standards.
-
-## 9. Implement Malformed File Event Logging [pending]
-### Dependencies: 17.5, 17.6
-### Description: Implement detailed logging for all instances where a malformed, corrupted, or password-protected file is detected and rejected.
-### Details:
-Add logging statements at the points where malformed file errors are caught and handled (Subtasks 5, 6). Log the event timestamp, the type of error (format, corruption, password), the file name (if available and safe to log), and potentially a request ID or user ID for traceability, following the application's logging standards.
-
-## 10. Develop Comprehensive Tests for Malformed File Handling [pending]
-### Dependencies: 17.5, 17.6, 17.7, 17.8, 17.9
-### Description: Develop unit and integration tests to cover all aspects of malformed file handling, including format validation, corruption detection, password protection detection, error propagation, CLI/API reporting, and logging.
-### Details:
-Create test cases using intentionally malformed, corrupted, and password-protected files. Include tests verifying that the 5 benchmark Excel files are correctly processed without triggering these errors. Ensure tests cover error handling paths in upload and parsing, verify correct CLI/API output/responses, and check for appropriate log entries. Aim for 90%+ unit test coverage for the implemented logic.
+Adjust the relevant code generation modules to incorporate the conditional logic. Ensure that the generated Python script correctly utilizes the evaluator calls when the option is enabled.
 

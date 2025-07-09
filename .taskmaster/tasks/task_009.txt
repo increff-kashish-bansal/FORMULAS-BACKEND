@@ -1,37 +1,25 @@
 # Task ID: 9
-# Title: Implement CLI Output Generation
-# Status: pending
+# Title: Assemble and Output Final Python Script
+# Status: done
 # Dependencies: 8
-# Priority: medium
-# Description: Implement the output mechanism for the CLI, returning the generated Python script and the log file.
+# Priority: high
+# Description: Generate the final runnable Python script file, including necessary imports and variable assignments.
 # Details:
-After script generation (Task 8) and logging (Task 13), write the generated Python code to standard output or a specified file path. Write the accumulated warnings and logs to `log.txt` in the current directory or a specified output directory. Handle error messages by writing to `stderr`.
+Assemble the generated code snippets, including `from xlcalculator import ...` imports, variable assignments based on naming logic, and static/runtime formula translations. Output as a `.py` file.
 
 # Test Strategy:
-Run the CLI with test files. Verify that the `.py` script is generated and output correctly (either to stdout or file). Check that the `log.txt` file is created and contains all expected warnings and messages. Test error output to `stderr`.
+Generate a full script for a test workbook. Verify the output is a valid, runnable Python file.
 
 # Subtasks:
-## 1. Implement Cross-Sheet Reference Parsing [pending]
+## 1. Assemble Python Script Components [done]
 ### Dependencies: None
-### Description: Modify the formula parsing component to detect and correctly parse cross-sheet references (e.g., SheetName!CellRef). This involves updating the lexer and parser to recognize sheet names and the '!' separator, and storing the sheet name and cell reference as distinct parts of the formula's Abstract Syntax Tree (AST) or intermediate representation. Ensure compatibility with various valid sheet naming conventions.
+### Description: Combine the generated Python code snippets from previous steps, including necessary imports (e.g., `xlcalculator`, `Evaluator`), variable initialization, and the translated formula expressions into a single, cohesive Python script.
 ### Details:
-Update `formula_parser.py` and related components. Adhere to naming conventions and code organization standards. Implement comprehensive unit tests covering various valid and invalid cross-sheet reference formats (e.g., 'Sheet1!A1', 'Another Sheet'!B2, 'Sheet with Spaces'!C3, '!A1', 'Sheet1!'). Ensure error handling for malformed references is in place according to RULES.MD.
 
-## 2. Build Sheet Dependency Graph [pending]
-### Dependencies: 9.1
-### Description: Based on the parsed cross-sheet references from Subtask 1, construct a directed graph representing dependencies between sheets. Each node in the graph should represent a sheet, and a directed edge from Sheet A to Sheet B indicates that Sheet A contains formulas referencing cells in Sheet B.
-### Details:
-Develop a new module or integrate graph building logic into the processing pipeline. Use an appropriate graph data structure (e.g., adjacency list/matrix). Implement logic to iterate through all parsed formulas and identify cross-sheet dependencies. Adhere to architectural patterns. Implement unit tests for graph construction with different dependency scenarios (linear, branching, no dependencies).
 
-## 3. Implement Sheet Processing Order and Circular Dependency Detection [pending]
-### Dependencies: 9.2
-### Description: Implement a topological sort algorithm on the dependency graph built in Subtask 2 to determine the correct processing order for sheets. Integrate logic to detect circular dependencies during the topological sort process. If a circular dependency is found, handle it according to the specified error handling procedures (e.g., raise a specific exception, log the issue, potentially halt processing for that file).
+## 2. Implement Output to a .py file [done]
+### Dependencies: None
+### Description: Implement the functionality to write the assembled Python script to a `.py` file. Ensure proper file naming conventions and handling of file system operations.
 ### Details:
-Implement the topological sort algorithm (e.g., Kahn's algorithm or DFS-based). Ensure the algorithm correctly identifies cycles. Adhere to error handling and logging standards defined in RULES.MD. Implement unit tests specifically for topological sort and circular dependency detection using various graph structures, including test cases designed to trigger circular reference errors. Ensure this processing order is available for the code generation phase.
 
-## 4. Generate Code with Cross-Sheet Reference Resolution [pending]
-### Dependencies: 9.3
-### Description: Modify the Python script generation component to correctly handle cross-sheet references based on the processing order determined in Subtask 3. This involves generating code that accesses data from sheets that have already been processed and made available (e.g., via generated variables or functions).
-### Details:
-Update the code generation logic (`code_generator.py`). Define how data from processed sheets is stored and accessed by subsequent sheets in the generated script, ensuring security and performance thresholds are met. Implement test cases for code generation covering various cross-sheet reference scenarios, including references to different cell types and ranges. Integrate this into the end-to-end testing using the 5 benchmark Excel files, ensuring 90%+ unit test coverage for the new code. Verify the generated code correctly resolves references and produces expected outputs.
 

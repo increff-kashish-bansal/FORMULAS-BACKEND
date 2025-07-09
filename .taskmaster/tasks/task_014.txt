@@ -1,11 +1,31 @@
 # Task ID: 14
-# Title: Implement Unit Tests for Core Components
+# Title: Implement Logging and Warning System
 # Status: pending
-# Dependencies: 4, 5, 8, 13
-# Priority: high
-# Description: Write unit tests for key components: formula extraction, variable naming logic, and Python code generation.
+# Dependencies: 13
+# Priority: medium
+# Description: Implement logging and warning mechanisms for skipped elements, fallbacks, and variable naming inferences.
 # Details:
-Create isolated test cases for the functions responsible for parsing formulas using `formulas`, applying the variable naming rules, and generating Python code snippets. Use mock data representing parsed sheet structures and extracted formulas. Ensure tests cover edge cases and different scenarios outlined in the PRD.
+Use Python's `logging` module. Log warnings when formulas fall back to runtime evaluation or when variable names are inferred from cell addresses. Log errors during parsing or execution.
 
 # Test Strategy:
-Run the unit test suite. Ensure all tests pass and achieve high code coverage for the core parsing, naming, and generation modules. Verify tests cover successful cases, edge cases, and expected error/warning conditions.
+Process workbooks triggering warnings/errors. Verify logs are generated correctly and contain relevant information.
+
+# Subtasks:
+## 1. Configure Basic Logging System [pending]
+### Dependencies: None
+### Description: Set up the core Python logging configuration using the `logging` module. This includes defining logger instances, handlers (e.g., console, file), formatters, and setting appropriate logging levels (INFO, WARNING, ERROR).
+### Details:
+Choose appropriate handlers (e.g., StreamHandler for console, FileHandler for file), define a clear log message format, and set the root logger or specific logger levels.
+
+## 2. Integrate Logging for Specific Events [pending]
+### Dependencies: 14.1
+### Description: Identify code locations where skipped elements, formula fallbacks, variable naming inferences, and parsing/execution errors occur. Add specific logging calls (e.g., `logger.warning`, `logger.info`, `logger.error`) at these points to record the events with relevant context.
+### Details:
+Ensure log messages clearly indicate the type of event (skipped, fallback, inference, error) and include details like the element/variable involved, the fallback used, or the error message.
+
+## 3. Refine Log Output and Handling [pending]
+### Dependencies: 14.2
+### Description: Review the generated log messages for clarity and completeness. Adjust formatters, add extra context (like line numbers, function names), and potentially implement more sophisticated log handling (e.g., rotating file logs, different handlers for different levels) based on requirements.
+### Details:
+Consider using logging filters or custom handlers if specific log routing or processing is needed. Ensure logs are accessible and easy to analyze.
+

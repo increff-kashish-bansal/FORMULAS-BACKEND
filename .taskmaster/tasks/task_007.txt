@@ -1,11 +1,31 @@
 # Task ID: 7
-# Title: Implement Unsupported Formula Placeholders
-# Status: pending
-# Dependencies: 4
-# Priority: medium
-# Description: Implement the handling of unsupported formulas by substituting them with placeholder values or comments in the generated Python script.
+# Title: Implement Runtime `xlcalculator` Fallback Generation
+# Status: done
+# Dependencies: 6
+# Priority: high
+# Description: Implement fallback logic for complex or unsupported formulas, embedding `xlcalculator` runtime calls in the generated Python.
 # Details:
-Identify formulas that the `formulas` library cannot parse or that are explicitly out of scope (e.g., `INDIRECT`, `OFFSET`, external links). For such formulas, insert a clear placeholder (e.g., a comment indicating the original formula and its location, or a default value like `None` or `0`) in the generated Python script. Log a warning for each unsupported formula encountered.
+For formulas that cannot be statically translated, generate code that uses the `evaluator.evaluate('Sheet!Cell')` method from `xlcalculator` within the output script.
 
 # Test Strategy:
-Create test sheets containing known unsupported formulas. Verify that these formulas are identified during parsing and replaced with the defined placeholders in the generated script. Check that corresponding warnings are added to the log.
+Generate code for a workbook with complex formulas. Verify the output script includes `evaluator.evaluate()` calls for those cells.
+
+# Subtasks:
+## 1. Enhance Static Analysis to Identify Fallback Formulas [done]
+### Dependencies: None
+### Description: Modify the static analysis component of the backend API to detect Excel formulas that are too complex or currently unsupported for direct static Python translation. Flag these formulas for runtime evaluation.
+### Details:
+Define criteria for identifying complex/unsupported formulas (e.g., specific functions, nested structures, dynamic references). Update the formula parsing and analysis logic to apply these criteria and mark the relevant formula nodes.
+
+## 2. Implement Runtime Fallback Code Generation [done]
+### Dependencies: 7.1
+### Description: Develop the code generation logic to produce Python code snippets for the formulas identified in Subtask 1. These snippets should utilize `xlcalculator.evaluator.evaluate()` to evaluate the original Excel formula string at runtime.
+### Details:
+Design a template for the generated Python code that wraps the `xlcalculator` call. Ensure correct handling of formula strings, cell references, and potential dependencies needed by `xlcalculator` within the runtime context. This generation logic will be part of the backend API's code generation phase.
+
+## 3. Integrate Fallback Generation and Execution into Backend API [done]
+### Dependencies: 7.1, 7.2
+### Description: Incorporate the enhanced static analysis (Subtask 1) and the runtime code generation (Subtask 2) into the main backend API workflow. Ensure the generated runtime code is correctly included in the final output and executed appropriately during the API's evaluation process.
+### Details:
+Update the backend API's processing pipeline to include the new identification and generation steps. Manage the integration of statically generated code with the dynamically generated runtime fallback calls. Implement error handling for runtime evaluation failures.
+

@@ -1,11 +1,31 @@
 # Task ID: 8
-# Title: Develop Python Script Generation Core Logic
-# Status: pending
-# Dependencies: 4, 5, 6, 7
+# Title: Implement Variable Naming Logic
+# Status: done
+# Dependencies: 6, 7
 # Priority: high
-# Description: Develop the core logic for generating the runnable Python script from the extracted formulas and variable names.
+# Description: Develop the variable naming logic based on Named Range, Header, or Cell Reference hierarchy.
 # Details:
-Iterate through the extracted formulas and their corresponding variable names. Translate the formula logic (using the `formulas` library's internal representation or by mapping common functions) into Python code. Structure the script with input variable assignments (using names from Task 5), followed by derived variable calculations based on the formulas. Include necessary imports. Handle the order of calculations to respect dependencies between cells/formulas.
+Implement the hierarchy: Named Range > Header > Cell Reference (e.g., `cell_A1`). Handle fallbacks for missing/merged headers. Store mapping from Excel cell to generated variable name.
 
 # Test Strategy:
-Generate scripts from test sheets with various formulas (arithmetic, logical, aggregations, lookups, cross-sheet). Manually review the generated Python code to ensure it accurately reflects the Excel logic, uses the correct variable names, and handles dependencies reasonably. Verify placeholders for unsupported formulas are present.
+Test with workbooks having named ranges, headers, and only cell references. Verify variable names in generated code follow the hierarchy.
+
+# Subtasks:
+## 1. Implement Named Range Variable Naming [done]
+### Dependencies: None
+### Description: Implement the logic to extract named ranges from the `xlcalculator` model and use them as Python variable names.
+### Details:
+
+
+## 2. Implement Header-based Variable Naming [done]
+### Dependencies: None
+### Description: Develop the logic to extract header information from Excel sheets and use it to generate Python variable names. Handle cases with missing or merged headers by falling back to cell references.
+### Details:
+
+
+## 3. Implement Cell Reference-based Variable Naming (Fallback) [done]
+### Dependencies: None
+### Description: Ensure that if neither named ranges nor headers are available, the system defaults to using cleaned cell references (e.g., A1 becomes cell_A1) as Python variable names.
+### Details:
+
+

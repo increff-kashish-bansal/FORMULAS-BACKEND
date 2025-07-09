@@ -1,43 +1,39 @@
 # Task ID: 12
-# Title: Implement Script Execution Logic
-# Status: pending
-# Dependencies: 8, 11
+# Title: Develop Sandboxed Execution Environment
+# Status: in-progress
+# Dependencies: 11
 # Priority: high
-# Description: Implement the logic to execute the generated Python script within the secure sandbox environment and capture its output.
+# Description: Develop a sandboxed execution environment for running the generated Python scripts securely.
 # Details:
-Take the generated script (from Task 8) and execute it using the sandboxing mechanism set up in Task 11. Capture standard output and standard error streams. Handle execution timeouts or resource limit violations gracefully. Format the captured output (e.g., print statements) into a structured format like JSON for the API or plain text for the CLI.
+Implement execution using `subprocess` with resource limits (`resource` module) or within a Docker container with AppArmor/SECCOMP profiles. Enforce CPU (30s), RAM (128MB), and network restrictions.
 
 # Test Strategy:
-Generate scripts from test sheets that produce specific outputs via print statements. Execute these scripts in the sandbox and verify that the output is correctly captured and formatted. Test execution with scripts that should trigger resource limits or errors and ensure graceful handling.
+Run test scripts designed to exceed resource limits or access network. Verify the sandbox correctly terminates execution.
 
 # Subtasks:
-## 1. Create Test Excel Fixtures [pending]
+## 1. Research Python Sandboxing Techniques [done]
 ### Dependencies: None
-### Description: Design and create a set of Excel files (.xlsx, .csv, .tsv) containing various formula types, cross-sheet references, named ranges, headers, and edge cases with documented expected outputs.
+### Description: Research various Python sandboxing techniques, including `subprocess`, `resource` module, Docker, and other secure execution methods.
 ### Details:
-Create test files covering arithmetic (+, -, *, /), logical (IF, AND, OR), aggregation (SUM, AVERAGE, COUNT), and lookup (VLOOKUP, HLOOKUP) formulas. Include specific sheets/cases for cross-sheet references (F7), named ranges (F6), ambiguous headers (F10), and edge cases (e.g., errors, empty cells, unsupported formulas F5). Document the expected Python code output and/or execution results for each test case. Aim for at least 5 benchmark files as specified in RULES.md.
+<info added on 2025-07-09T07:10:21.769Z>
+Researched Python sandboxing techniques. Key findings include: 1. `subprocess` with `resource` module: Allows setting CPU, memory, and file size limits for child processes. Good for basic resource control. 2. `seccomp`: Linux kernel feature for syscall filtering, stronger security but OS-specific. 3. Docker/Containerization: Strong process isolation, consistent environments, ideal for production but complex setup. 4. `secimport`: Python package using `dtrace` for fine-grained module confinement. For this task, `subprocess` with `resource` module is the most practical initial approach.
+</info added on 2025-07-09T07:10:21.769Z>
 
-## 2. Implement Tests for Basic Formula Types [pending]
-### Dependencies: 12.1
-### Description: Write tests to verify the correct conversion of basic arithmetic, logical, aggregation, and lookup formulas from Excel to Python using the created test fixtures.
+## 2. Implement subprocess based execution [in-progress]
+### Dependencies: None
+### Description: Implement a Python function that executes a given script using `subprocess` and captures its output.
 ### Details:
-Use the fixtures from Subtask 1. Implement tests that parse the Excel files (F1, F2, F4) and assert that the generated Python code (F8) correctly represents the original formula logic. Verification methods include comparing generated Python code snippets against expected patterns and potentially executing the generated code in a sandboxed environment (F12, F13) and comparing results against expected values documented in the fixtures. Ensure coverage for F5 (unsupported placeholders) and F6 (variable naming from headers/named ranges).
 
-## 3. Implement Tests for Cross-Sheet References and Edge Cases [pending]
-### Dependencies: 12.1, 12.2
-### Description: Write tests specifically targeting cross-sheet references, named ranges, ambiguous headers, and other edge cases identified in the fixtures.
-### Details:
-Use the fixtures from Subtask 1 and the testing framework from Subtask 2. Implement tests to verify correct handling of cross-sheet references (F7), variable naming from named ranges/headers (F6, F10), and graceful handling/logging of edge cases like unsupported formulas (F5) or errors (F17, F18, F19). Verification methods include checking generated Python code for correct references/variable names and verifying log/warning outputs against expected messages.
 
-## 4. Implement CLI Interface Tests [pending]
-### Dependencies: 12.1, 12.2, 12.3
-### Description: Write tests to verify the functionality of the command-line interface, including file ingestion, processing, and output generation.
+## 3. Enforce CPU and RAM restrictions using the `resource` module [in-progress]
+### Dependencies: None
+### Description: Implement resource limits for CPU (30s) and RAM (128MB) for the sandboxed execution using the `resource` module and `preexec_fn`.
 ### Details:
-Use the test fixtures from Subtask 1 and the core conversion logic tested in Subtasks 2 and 3. Implement tests that invoke the CLI (F14) with different file types (.xlsx, .csv, .tsv - F1) and options (e.g., `--run` F12). Verification methods include checking the CLI output (stdout, stderr - F19), verifying that the generated Python file (F16) is created correctly, and potentially comparing execution results if the `--run` option is used (F12, F13). Test file size limits (F3).
 
-## 5. Implement API Interface Tests [pending]
-### Dependencies: 12.1, 12.2, 12.3
-### Description: Write tests to verify the functionality of the REST API interface, including file upload, processing, and JSON response generation.
+
+## 4. Implement basic network restriction (if feasible within `subprocess`) [pending]
+### Dependencies: None
+### Description: Implement basic network restriction for the sandboxed execution, if feasible within the `subprocess` and `resource` module context.
 ### Details:
-Use the test fixtures from Subtask 1 and the core conversion logic tested in Subtasks 2 and 3. Implement tests that send file POST requests to the API endpoint (F15). Verification methods include checking the HTTP response status code (e.g., 200 OK), verifying the structure and content of the JSON response (F15), including the warnings array (F18) and the generated Python code/download link (F16). Test file size limits (F3) and concurrency handling (F21).
+
 

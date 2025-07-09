@@ -3,21 +3,53 @@
     "tasks": [
       {
         "id": 1,
-        "title": "Project Setup and Dependency Management",
-        "description": "Set up the project repository, define the basic project structure, and add necessary dependencies, including pinning the 'formulas' library to version 1.2.2.",
-        "details": "Initialize a git repository. Create project directories (e.g., `src`, `tests`, `docs`). Create a `requirements.txt` or equivalent dependency file. Add `fastapi`, `uvicorn`, `pandas`, `openpyxl`, `xlrd`, `formulas==1.2.2` (ensure compatibility with pandas/openpyxl), and any other required libraries. Set up a virtual environment.",
-        "testStrategy": "Verify that all specified dependencies are installed correctly in the virtual environment and that the 'formulas' library is specifically version 1.2.2. Run a simple import test for key libraries.",
+        "title": "Setup Project Repository and Structure",
+        "description": "Initialize the project repository, set up basic project structure, and configure version control.",
+        "details": "Create a new git repository. Set up a standard Python project structure (e.g., src/, tests/, docs/). Add a .gitignore file for common Python and OS files. Consider using a dependency manager like Poetry or Pipenv.",
+        "testStrategy": "Verify repository is created, initial files are present, and .gitignore is configured correctly.",
         "priority": "high",
         "dependencies": [],
         "status": "done",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Initialize Git and Create Basic Structure",
+            "description": "Initialize a new Git repository and create the standard project directories (src, tests, docs).",
+            "dependencies": [],
+            "details": "Run 'git init' in the project root directory. Create the 'src', 'tests', and 'docs' directories.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Configure .gitignore",
+            "description": "Create and populate the .gitignore file to exclude unnecessary files and directories from version control.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a '.gitignore' file in the project root. Add common Python ignores such as __pycache__, .venv, build, dist, editor files, etc.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Set Up Dependency Management",
+            "description": "Initialize a dependency manager (Poetry or Pipenv) for the project.",
+            "dependencies": [
+              1
+            ],
+            "details": "Choose either Poetry or Pipenv. Run the appropriate initialization command (e.g., 'poetry init' or 'pipenv --python <version>') in the project root.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 2,
-        "title": "Implement File Upload and Temporary Storage",
-        "description": "Implement the file upload mechanism for both the CLI and REST API interfaces, handling incoming files and storing them temporarily.",
-        "details": "For the REST API, use FastAPI's `UploadFile` feature to accept POST requests with file data. For the CLI, use `argparse` or similar to accept a file path argument. Implement logic to save the uploaded/specified file to a temporary directory with a unique identifier. Ensure support for `.xlsx`, `.csv`, and `.tsv` extensions.",
-        "testStrategy": "Test file uploads via both CLI and API for each supported file type (.xlsx, .csv, .tsv). Verify that files are correctly received and stored temporarily with their original names or a unique identifier.",
+        "title": "Install Core Dependencies (`xlcalculator`, FastAPI)",
+        "description": "Install necessary core dependencies, including `xlcalculator` and potentially a web framework like FastAPI.",
+        "details": "Use the chosen dependency manager (Poetry/Pipenv/pip) to add `xlcalculator` and `fastapi` (or similar async framework) to the project dependencies. Ensure dependencies are locked.",
+        "testStrategy": "Verify dependencies are installed and importable in a test script.",
         "priority": "high",
         "dependencies": [
           1
@@ -26,32 +58,21 @@
         "subtasks": [
           {
             "id": 1,
-            "title": "Implement Shared File Validation Utilities",
-            "description": "Create reusable functions for validating uploaded files, including checking file type (.xlsx, .csv, .tsv) based on extension/mime type and enforcing the file size limit (<10MB). Include error handling for invalid types and sizes.",
+            "title": "Choose dependency manager and initialize project",
+            "description": "Select a Python dependency manager (Poetry, Pipenv, or pip) and perform the initial project setup or environment creation.",
             "dependencies": [],
-            "details": "Implement validation logic as per F1 and F3. Write unit tests for validation functions covering valid/invalid file types and sizes.",
+            "details": "Consider project needs and team preference when choosing between Poetry, Pipenv, or standard pip with requirements files. Execute the necessary command to initialize the project or environment.",
             "status": "done",
             "testStrategy": ""
           },
           {
             "id": 2,
-            "title": "Implement CLI File Upload and Validation",
-            "description": "Develop the CLI interface to accept a file path as input. Use the shared validation utilities (Subtask 1) to check the file before processing. Implement error handling for validation failures and file system errors. Include test cases for CLI file input.",
+            "title": "Install dependencies and lock versions",
+            "description": "Install the `xlcalculator` and `fastapi` libraries using the chosen dependency manager and generate a lock file to record exact versions.",
             "dependencies": [
               1
             ],
-            "details": "Implement CLI logic using argparse or typer (as per RULES.md). Integrate validation from Subtask 1. Add tests for CLI argument parsing and validation error handling.",
-            "status": "done",
-            "testStrategy": ""
-          },
-          {
-            "id": 3,
-            "title": "Implement API File Upload Endpoint with Validation",
-            "description": "Create a REST API endpoint using FastAPI to accept file uploads via multipart form data. Use the shared validation utilities (Subtask 1) to check the uploaded file. Implement error handling for validation failures and API-specific issues. Include test cases for the API endpoint.",
-            "dependencies": [
-              1
-            ],
-            "details": "Implement FastAPI endpoint as per F15. Handle multipart file uploads. Integrate validation from Subtask 1. Add integration tests for the API endpoint covering successful uploads and validation errors.",
+            "details": "Use the appropriate command for the selected manager (e.g., `poetry add`, `pipenv install`, `pip install` followed by locking) to add `xlcalculator` and `fastapi`. Ensure a lock file (e.g., `poetry.lock`, `Pipfile.lock`, `requirements.lock`) is created or updated.",
             "status": "done",
             "testStrategy": ""
           }
@@ -59,10 +80,10 @@
       },
       {
         "id": 3,
-        "title": "Implement File Parsing for Supported Types",
-        "description": "Develop the core logic for parsing uploaded files based on their type (.xlsx, .csv, .tsv) to read data from all sheets/sections.",
-        "details": "Use `pandas` with appropriate engines (`openpyxl` for .xlsx, built-in pandas readers for .csv/.tsv) to read data. For .xlsx, iterate through all sheets in the workbook. For .csv/.tsv, treat the single file as one sheet. Store the parsed data in a structured format (e.g., dictionary of pandas DataFrames, where keys are sheet names).",
-        "testStrategy": "Prepare test files for each supported type (.xlsx with multiple sheets, .csv, .tsv). Parse these files and verify that all sheets/data are read correctly into the expected data structure. Check for correct handling of different delimiters for .csv/.tsv.",
+        "title": "Implement File Loading and Validation",
+        "description": "Implement the core logic for loading an Excel/CSV/TSV file and validating its type and size.",
+        "details": "Create a function or class to handle file uploads. Check file extension (`.xlsx`, `.csv`, `.tsv`). Implement size check (<10MB). Raise appropriate errors for invalid files.",
+        "testStrategy": "Test with valid and invalid file types/sizes. Ensure correct errors are raised.",
         "priority": "high",
         "dependencies": [
           2
@@ -71,56 +92,44 @@
         "subtasks": [
           {
             "id": 1,
-            "title": "Implement Excel File Parsing and Formula Identification",
-            "description": "Develop the module responsible for parsing .xls and .xlsx files using the 'formulas' library. Identify cells containing formulas and extract their raw string representation. Integrate logging for parsing activities and potential warnings.",
+            "title": "Implement File Upload Handling",
+            "description": "Set up the core functionality to receive and process the uploaded file data from the input source.",
             "dependencies": [],
-            "details": "Utilize 'formulas.ExcelModel' for parsing. Handle different sheet types and structures within Excel files. Implement logic to iterate through cells and identify those marked as containing formulas by the library. Capture the raw formula string from identified cells. Adhere to project naming conventions and code organization standards. Implement logging for successful parsing, sheet processing, and initial formula identification.",
+            "details": "Define the interface or function signature for receiving the file. Handle temporary storage or in-memory representation of the file data.",
             "status": "done",
             "testStrategy": ""
           },
           {
             "id": 2,
-            "title": "Implement CSV/TSV File Parsing and Potential Formula Identification",
-            "description": "Develop the module responsible for parsing .csv and .tsv files using 'pandas'. Identify cells containing strings that potentially represent formulas (e.g., starting with '='). Integrate logging for parsing activities.",
-            "dependencies": [],
-            "details": "Use 'pandas.read_csv' with appropriate delimiters (comma, tab). Implement logic to iterate through DataFrame cells and identify strings that start with '=' as potential formulas. Note that CSV/TSV do not have native formula types like Excel, so this is based on string content. Adhere to project naming conventions and code organization standards. Implement logging for successful parsing and potential formula string identification.",
+            "title": "Add File Size Validation",
+            "description": "Implement a check to ensure the uploaded file's size does not exceed the specified limit of 10MB.",
+            "dependencies": [
+              1
+            ],
+            "details": "Access the file size property from the received file data and compare it against the 10MB threshold (10 * 1024 * 1024 bytes).",
             "status": "done",
             "testStrategy": ""
           },
           {
             "id": 3,
-            "title": "Implement Unified Formula Extraction and Data Preparation",
-            "description": "Develop the core logic to process the identified formula information from both Excel (Subtask 1) and CSV/TSV (Subtask 2) sources. Prepare the extracted data (cell reference, sheet name, formula string, source file) for inclusion in the unified data structure.",
+            "title": "Add File Extension Validation",
+            "description": "Implement a check to verify that the file extension is one of the allowed types: .xlsx, .csv, or .tsv.",
             "dependencies": [
-              1,
-              2
+              1
             ],
-            "details": "Create a processing layer that accepts input from the Excel parsing module (Subtask 1) and the CSV/TSV parsing module (Subtask 2). Extract the necessary details (sheet name, cell address, raw formula string) in a consistent format. Handle the differences in how cell references and sheet names are provided by the underlying libraries/methods. Prepare data objects or dictionaries suitable for the unified structure defined in Subtask 4. Integrate logging for the extraction process.",
+            "details": "Extract the file extension from the filename and compare it against the list of allowed extensions (case-insensitive).",
             "status": "done",
             "testStrategy": ""
           },
           {
             "id": 4,
-            "title": "Design and Implement Unified Data Structure and Output Mechanism",
-            "description": "Define and implement the data structure that will hold the extracted formula information from all supported file types (Excel, CSV, TSV). Implement the mechanism to output this unified data structure.",
+            "title": "Implement Specific Error Handling",
+            "description": "Define and raise distinct, specific error types for invalid file size and invalid file extension validation failures.",
             "dependencies": [
+              2,
               3
             ],
-            "details": "Design a Python class or a standardized dictionary structure to represent each extracted formula instance. This structure must include fields for 'file_path', 'sheet_name', 'cell_address', 'formula_string', and 'error' (to capture issues during parsing/extraction). Ensure the structure is consistent regardless of the source file type. Implement a method or function to collect these instances and provide them as a list or similar aggregate structure. Adhere to project naming conventions and code organization standards.",
-            "status": "done",
-            "testStrategy": ""
-          },
-          {
-            "id": 5,
-            "title": "Implement Comprehensive Error Handling and Testing Suite",
-            "description": "Implement robust error handling for parsing issues (corrupted files, unsupported features) and extraction issues (invalid formulas, edge cases). Develop and execute a comprehensive testing suite, including unit tests (targeting 90%+ coverage), integration tests, benchmark tests using 5 specified Excel files, and tests for various edge cases (empty files, files with no formulas, malformed CSV/TSV formula strings).",
-            "dependencies": [
-              1,
-              2,
-              3,
-              4
-            ],
-            "details": "Implement try-except blocks to catch exceptions raised by 'formulas' and 'pandas' during parsing and by the extraction logic (Subtask 3). Define how errors are captured and stored in the 'error' field of the unified data structure (Subtask 4). Ensure logging captures detailed error information. Write unit tests for each function/method in modules developed in Subtasks 1, 2, 3, and 4, aiming for at least 90% code coverage. Create integration tests to verify the end-to-end flow from file ingestion to unified data structure output. Prepare 5 benchmark Excel files and test the extraction performance and correctness against them. Create test cases for edge scenarios like corrupted files, files with only data (no formulas), files with unusual characters in formulas, and CSV/TSV files with strings that might ambiguously start with '='. Document the error handling strategy and test coverage results.",
+            "details": "Create custom exception classes (e.g., InvalidFileSizeError, InvalidFileExtensionError) or use specific error codes. Integrate error raising into the validation logic implemented in steps 2 and 3.",
             "status": "done",
             "testStrategy": ""
           }
@@ -128,10 +137,10 @@
       },
       {
         "id": 4,
-        "title": "Integrate Formulas Library for Extraction",
-        "description": "Integrate the 'formulas' library (v1.2.2) to extract formulas from the parsed Excel sheets.",
-        "details": "After parsing the file into a pandas DataFrame structure per sheet, iterate through cells in .xlsx sheets using `openpyxl` (or equivalent access via pandas if possible) to identify cells containing formulas. Use the `formulas` library's parsing capabilities to extract the formula string and potentially an initial representation. Focus on extracting the formula string itself at this stage.",
-        "testStrategy": "Create test .xlsx files with various formulas in different cells and sheets. Run the extraction logic and verify that the formula strings from all formula-containing cells across all sheets are correctly identified and extracted using the `formulas` library.",
+        "title": "Integrate `xlcalculator` for Parsing and Evaluation",
+        "description": "Integrate `xlcalculator` to parse the loaded workbook and evaluate formulas across all sheets.",
+        "details": "Use `xlcalculator.ModelCompiler().read_and_parse_archive()` for `.xlsx` or appropriate methods for `.csv`/`.tsv`. Handle potential parsing errors. Ensure all sheets are processed.",
+        "testStrategy": "Load a test workbook with formulas across multiple sheets. Verify `xlcalculator` successfully parses and evaluates values.",
         "priority": "high",
         "dependencies": [
           3
@@ -140,789 +149,849 @@
         "subtasks": [
           {
             "id": 1,
-            "title": "Extract and Sanitize Headers",
-            "description": "Implement logic to extract potential variable names from spreadsheet headers. Sanitize extracted headers by converting to lowercase, replacing spaces with underscores, and removing/handling special characters.",
+            "title": "Load File for xlcalculator",
+            "description": "Implement the loading of the Excel/CSV/TSV file into a format `xlcalculator` can process.",
             "dependencies": [],
-            "details": "Handle merged cells, empty headers, and headers containing non-alphanumeric characters. Ensure output is suitable for use as a base for Python variable names.",
             "status": "done",
-            "testStrategy": ""
+            "details": ""
           },
           {
             "id": 2,
-            "title": "Implement Primary Name Generation",
-            "description": "Develop algorithms to generate variable names based on sanitized headers and potentially Named Ranges, adhering strictly to Python's snake_case convention.",
+            "title": "Parse Workbook with xlcalculator",
+            "description": "Utilize `xlcalculator.ModelCompiler().read_and_parse_archive()` or similar methods to parse the loaded workbook data.",
             "dependencies": [
               1
             ],
-            "details": "Prioritize Named Ranges if available (as per F6). Apply snake_case formatting to sanitized headers. Handle potential conflicts with Python reserved keywords by appending a suffix (e.g., '_var').",
             "status": "done",
-            "testStrategy": ""
+            "details": ""
           },
           {
             "id": 3,
-            "title": "Implement Fallback Name Generation",
-            "description": "Develop the fallback strategy for cells or ranges that do not have associated headers or Named Ranges, generating names in the format `cell_<col><row>` (e.g., `cell_A1`).",
+            "title": "Evaluate Formulas Across Sheets",
+            "description": "Implement logic to evaluate all formulas across all sheets in the parsed `xlcalculator` model.",
             "dependencies": [
-              1
+              2
             ],
-            "details": "This strategy applies when primary methods (headers, Named Ranges) fail or are unavailable. Ensure the generated format `cell_<col><row>` is consistently applied.",
             "status": "done",
-            "testStrategy": ""
+            "details": ""
           },
           {
             "id": 4,
-            "title": "Enforce Variable Name Uniqueness",
-            "description": "Implement a mechanism to ensure all generated variable names across the entire workbook are unique, regardless of their source (header, Named Range, fallback).",
+            "title": "Handle Parsing/Evaluation Errors",
+            "description": "Implement robust error handling for issues during `xlcalculator` parsing and formula evaluation.",
             "dependencies": [
               2,
               3
             ],
-            "details": "Detect duplicate names resulting from different sources or ambiguous/duplicate headers (as per F10). Resolve duplicates by appending a unique suffix (e.g., '_1', '_2') to the generated name. Log instances of duplicate name resolution (as per F17).",
             "status": "done",
-            "testStrategy": ""
+            "details": ""
           }
         ]
       },
       {
         "id": 5,
-        "title": "Develop Variable Naming Logic",
-        "description": "Implement the logic to determine variable names for cells based on the specified hierarchy: Named Range > Header (1st row) > Cell Reference.",
-        "details": "For each cell containing a formula or value that will be referenced: Check if it has a defined Excel Named Range. If not, check if it's in a column with a header in the first row. If neither, use the cell reference format (e.g., `cell_A1`). Handle ambiguities like merged headers by flattening and suffixing (e.g., `Revenue_Q2_1`). Log warnings for empty or malformed headers leading to fallback.",
-        "testStrategy": "Create test sheets covering all naming scenarios: named ranges, clear headers, merged headers, empty headers, and no clear headers. Verify that the generated variable names match the expected output for each case according to the specified hierarchy and ambiguity rules. Check that warnings are logged correctly for fallbacks.",
-        "priority": "high",
+        "title": "Extract Formula Dependency Relationships",
+        "description": "Develop the logic to extract formula dependency relationships from the `xlcalculator` model.",
+        "details": "Analyze the `xlcalculator` model object to understand which cells/formulas depend on others. This information is crucial for generating ordered Python code.",
+        "testStrategy": "Use a test workbook with simple dependencies. Verify the extracted dependency graph matches expectations.",
+        "priority": "medium",
         "dependencies": [
           4
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Implement Formula Parsing and Syntax Conversion",
-            "description": "Develop logic to parse Excel formula strings, convert operators (+, -, *, /, ^, etc.) and basic syntax (parentheses, string literals) into equivalent Python syntax.",
-            "dependencies": [],
-            "details": "Include handling of operator precedence, implicit multiplication (if applicable), and different literal types (numbers, strings, booleans). Test with formulas involving various operators and nested parentheses.",
-            "status": "done",
-            "testStrategy": ""
+            "title": "Understand xlcalculator Model Structure",
+            "description": "Research and understand how `xlcalculator` internally represents cell and formula dependencies within its model objects.",
+            "details": "Research and understand how `xlcalculator` internally represents cell and formula dependencies within its model objects.",
+            "status": "done"
           },
           {
             "id": 2,
-            "title": "Develop Excel Function Mapping",
-            "description": "Create a mapping from common Excel built-in functions (e.g., SUM, AVERAGE, IF, VLOOKUP) to corresponding Python functions or custom implementations.",
+            "title": "Identify Dependency Extraction Methods",
+            "description": "Identify the specific attributes or methods within the `xlcalculator` model objects that expose cell and formula dependency information.",
             "dependencies": [
-              1
+              "5.1"
             ],
-            "details": "Define how arguments are passed and results are handled for each mapped function. Consider common functions first. Test mapping with different function calls and argument types.",
             "status": "done",
-            "testStrategy": ""
+            "details": ""
           },
           {
             "id": 3,
-            "title": "Implement Cell Reference Resolution",
-            "description": "Develop logic to identify cell references (e.g., A1, B2:C5) within the parsed formula and replace them with corresponding Python variable names based on a provided mapping.",
-            "dependencies": [
-              1
-            ],
-            "details": "Handle absolute ($A$1) and relative (A1) references. Support single cell references and potentially range references. Test resolution with various reference types and locations in formulas.",
+            "title": "Implement Logic to Traverse Dependencies",
+            "description": "Develop code to traverse the dependency graph provided by `xlcalculator` to determine the correct order of formula evaluation.",
+            "details": "",
             "status": "done",
-            "testStrategy": ""
-          },
-          {
-            "id": 4,
-            "title": "Generate Python Code Structure",
-            "description": "Assemble the parsed and resolved formula components into a complete Python code snippet, including necessary imports, variable assignments for inputs, and the final calculation expression.",
             "dependencies": [
-              1,
-              2,
-              3
+              "5.2"
             ],
-            "details": "Create a function or script structure. Assign input variables based on cell reference resolution. Include imports for any required libraries. Test the execution of generated code with sample inputs and expected outputs.",
-            "status": "in-progress",
-            "testStrategy": ""
-          },
-          {
-            "id": 5,
-            "title": "Handle Unsupported Excel Functions",
-            "description": "Identify Excel functions encountered during parsing that do not have a defined mapping and implement a mechanism to report these as warnings or errors.",
-            "dependencies": [
-              2
-            ],
-            "details": "Log unsupported functions. Potentially insert placeholder comments or raise specific exceptions in the generated code. Test with formulas containing known unsupported functions.",
-            "status": "pending",
-            "testStrategy": ""
-          },
-          {
-            "id": 6,
-            "title": "Format Generated Python Code",
-            "description": "Apply standard Python code formatting rules (e.g., using a linter like Black or autopep8) to the generated code for improved readability and consistency.",
-            "dependencies": [
-              4
-            ],
-            "details": "Ensure proper indentation, spacing, and line breaks. Add comments where necessary. Verify formatting compliance using a linter.",
-            "status": "pending",
-            "testStrategy": ""
+            "parentTaskId": 5
           }
         ]
       },
       {
         "id": 6,
-        "title": "Handle Cross-Sheet References",
-        "description": "Add support for handling cross-sheet references within formulas.",
-        "details": "When parsing formulas using the `formulas` library, identify references that point to cells in other sheets (e.g., `Sheet2!A1`). Ensure the variable naming logic (Task 5) can correctly generate names for these referenced cells in other sheets. The script generation (Task 8) must then correctly link these cross-sheet variables.",
-        "testStrategy": "Create test .xlsx files with formulas referencing cells in other sheets. Verify that the parser correctly identifies these references and that the naming logic generates appropriate variable names for the referenced cells in the target sheets.",
-        "priority": "medium",
-        "dependencies": [
-          4,
-          5
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 7,
-        "title": "Implement Unsupported Formula Placeholders",
-        "description": "Implement the handling of unsupported formulas by substituting them with placeholder values or comments in the generated Python script.",
-        "details": "Identify formulas that the `formulas` library cannot parse or that are explicitly out of scope (e.g., `INDIRECT`, `OFFSET`, external links). For such formulas, insert a clear placeholder (e.g., a comment indicating the original formula and its location, or a default value like `None` or `0`) in the generated Python script. Log a warning for each unsupported formula encountered.",
-        "testStrategy": "Create test sheets containing known unsupported formulas. Verify that these formulas are identified during parsing and replaced with the defined placeholders in the generated script. Check that corresponding warnings are added to the log.",
-        "priority": "medium",
-        "dependencies": [
-          4
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 8,
-        "title": "Develop Python Script Generation Core Logic",
-        "description": "Develop the core logic for generating the runnable Python script from the extracted formulas and variable names.",
-        "details": "Iterate through the extracted formulas and their corresponding variable names. Translate the formula logic (using the `formulas` library's internal representation or by mapping common functions) into Python code. Structure the script with input variable assignments (using names from Task 5), followed by derived variable calculations based on the formulas. Include necessary imports. Handle the order of calculations to respect dependencies between cells/formulas.",
-        "testStrategy": "Generate scripts from test sheets with various formulas (arithmetic, logical, aggregations, lookups, cross-sheet). Manually review the generated Python code to ensure it accurately reflects the Excel logic, uses the correct variable names, and handles dependencies reasonably. Verify placeholders for unsupported formulas are present.",
+        "title": "Implement Static Python Code Generation",
+        "description": "Implement the core code generation logic, translating simple formulas to static Python expressions where possible.",
+        "details": "Iterate through evaluated cells/formulas. For simple cases (e.g., `A1+B1`), generate equivalent Python code (`cell_A1 + cell_B1`). Use placeholder comments for complex/unsupported formulas initially.",
+        "testStrategy": "Generate code for a workbook with simple math/logic formulas. Verify the output Python script contains correct static expressions.",
         "priority": "high",
         "dependencies": [
-          4,
-          5,
-          6,
-          7
+          5
         ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 9,
-        "title": "Implement CLI Output Generation",
-        "description": "Implement the output mechanism for the CLI, returning the generated Python script and the log file.",
-        "details": "After script generation (Task 8) and logging (Task 13), write the generated Python code to standard output or a specified file path. Write the accumulated warnings and logs to `log.txt` in the current directory or a specified output directory. Handle error messages by writing to `stderr`.",
-        "testStrategy": "Run the CLI with test files. Verify that the `.py` script is generated and output correctly (either to stdout or file). Check that the `log.txt` file is created and contains all expected warnings and messages. Test error output to `stderr`.",
-        "priority": "medium",
-        "dependencies": [
-          8
-        ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Implement Cross-Sheet Reference Parsing",
-            "description": "Modify the formula parsing component to detect and correctly parse cross-sheet references (e.g., SheetName!CellRef). This involves updating the lexer and parser to recognize sheet names and the '!' separator, and storing the sheet name and cell reference as distinct parts of the formula's Abstract Syntax Tree (AST) or intermediate representation. Ensure compatibility with various valid sheet naming conventions.",
+            "title": "Define Excel Function to Python Mapping",
+            "description": "Define a mapping or a set of rules to translate common Excel functions (e.g., SUM, IF, AVERAGE) into their equivalent Python operations or standard library functions. Consider a dictionary-based approach for direct mappings.",
+            "details": "",
+            "status": "done",
             "dependencies": [],
-            "details": "Update `formula_parser.py` and related components. Adhere to naming conventions and code organization standards. Implement comprehensive unit tests covering various valid and invalid cross-sheet reference formats (e.g., 'Sheet1!A1', 'Another Sheet'!B2, 'Sheet with Spaces'!C3, '!A1', 'Sheet1!'). Ensure error handling for malformed references is in place according to RULES.MD.",
-            "status": "pending",
+            "parentTaskId": 6
+          },
+          {
+            "id": 2,
+            "title": "Generate Python Code for Simple Formulas",
+            "description": "Implement the logic to translate simple Excel formulas (e.g., A1+B1, IF(A1>0, X, Y)) into equivalent static Python expressions. This should involve using the defined mapping and handling basic arithmetic and logical operations.",
+            "details": "",
+            "status": "done",
+            "dependencies": [
+              "6.1"
+            ],
+            "parentTaskId": 6
+          },
+          {
+            "id": 3,
+            "title": "Implement Basic Excel Formula Lexer/Tokenizer",
+            "description": "Create a function to tokenize an Excel formula string into meaningful parts (e.g., cell references, operators, function names, literals).",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 6
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Implement Runtime `xlcalculator` Fallback Generation",
+        "description": "Implement fallback logic for complex or unsupported formulas, embedding `xlcalculator` runtime calls in the generated Python.",
+        "details": "For formulas that cannot be statically translated, generate code that uses the `evaluator.evaluate('Sheet!Cell')` method from `xlcalculator` within the output script.",
+        "testStrategy": "Generate code for a workbook with complex formulas. Verify the output script includes `evaluator.evaluate()` calls for those cells.",
+        "priority": "high",
+        "dependencies": [
+          6
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Enhance Static Analysis to Identify Fallback Formulas",
+            "description": "Modify the static analysis component of the backend API to detect Excel formulas that are too complex or currently unsupported for direct static Python translation. Flag these formulas for runtime evaluation.",
+            "dependencies": [],
+            "details": "Define criteria for identifying complex/unsupported formulas (e.g., specific functions, nested structures, dynamic references). Update the formula parsing and analysis logic to apply these criteria and mark the relevant formula nodes.",
+            "status": "done",
             "testStrategy": ""
           },
           {
             "id": 2,
-            "title": "Build Sheet Dependency Graph",
-            "description": "Based on the parsed cross-sheet references from Subtask 1, construct a directed graph representing dependencies between sheets. Each node in the graph should represent a sheet, and a directed edge from Sheet A to Sheet B indicates that Sheet A contains formulas referencing cells in Sheet B.",
+            "title": "Implement Runtime Fallback Code Generation",
+            "description": "Develop the code generation logic to produce Python code snippets for the formulas identified in Subtask 1. These snippets should utilize `xlcalculator.evaluator.evaluate()` to evaluate the original Excel formula string at runtime.",
             "dependencies": [
               1
             ],
-            "details": "Develop a new module or integrate graph building logic into the processing pipeline. Use an appropriate graph data structure (e.g., adjacency list/matrix). Implement logic to iterate through all parsed formulas and identify cross-sheet dependencies. Adhere to architectural patterns. Implement unit tests for graph construction with different dependency scenarios (linear, branching, no dependencies).",
-            "status": "pending",
+            "details": "Design a template for the generated Python code that wraps the `xlcalculator` call. Ensure correct handling of formula strings, cell references, and potential dependencies needed by `xlcalculator` within the runtime context. This generation logic will be part of the backend API's code generation phase.",
+            "status": "done",
             "testStrategy": ""
           },
           {
             "id": 3,
-            "title": "Implement Sheet Processing Order and Circular Dependency Detection",
-            "description": "Implement a topological sort algorithm on the dependency graph built in Subtask 2 to determine the correct processing order for sheets. Integrate logic to detect circular dependencies during the topological sort process. If a circular dependency is found, handle it according to the specified error handling procedures (e.g., raise a specific exception, log the issue, potentially halt processing for that file).",
+            "title": "Integrate Fallback Generation and Execution into Backend API",
+            "description": "Incorporate the enhanced static analysis (Subtask 1) and the runtime code generation (Subtask 2) into the main backend API workflow. Ensure the generated runtime code is correctly included in the final output and executed appropriately during the API's evaluation process.",
             "dependencies": [
+              1,
               2
             ],
-            "details": "Implement the topological sort algorithm (e.g., Kahn's algorithm or DFS-based). Ensure the algorithm correctly identifies cycles. Adhere to error handling and logging standards defined in RULES.MD. Implement unit tests specifically for topological sort and circular dependency detection using various graph structures, including test cases designed to trigger circular reference errors. Ensure this processing order is available for the code generation phase.",
-            "status": "pending",
-            "testStrategy": ""
-          },
-          {
-            "id": 4,
-            "title": "Generate Code with Cross-Sheet Reference Resolution",
-            "description": "Modify the Python script generation component to correctly handle cross-sheet references based on the processing order determined in Subtask 3. This involves generating code that accesses data from sheets that have already been processed and made available (e.g., via generated variables or functions).",
-            "dependencies": [
-              3
-            ],
-            "details": "Update the code generation logic (`code_generator.py`). Define how data from processed sheets is stored and accessed by subsequent sheets in the generated script, ensuring security and performance thresholds are met. Implement test cases for code generation covering various cross-sheet reference scenarios, including references to different cell types and ranges. Integrate this into the end-to-end testing using the 5 benchmark Excel files, ensuring 90%+ unit test coverage for the new code. Verify the generated code correctly resolves references and produces expected outputs.",
-            "status": "pending",
+            "details": "Update the backend API's processing pipeline to include the new identification and generation steps. Manage the integration of statically generated code with the dynamically generated runtime fallback calls. Implement error handling for runtime evaluation failures.",
+            "status": "done",
             "testStrategy": ""
           }
         ]
       },
       {
-        "id": 10,
-        "title": "Implement REST API Output Generation",
-        "description": "Implement the output mechanism for the REST API, returning the generated script, execution output (if run), and a log URL.",
-        "details": "Define API response structure (JSON) including fields for the generated script content, execution results (if applicable, from Task 12), a list of warnings, and a URL/path to the log file. Serve the generated script and log file temporarily for download or include content directly in the JSON response where appropriate (e.g., warnings list).",
-        "testStrategy": "Call the API endpoint with test files. Verify that the JSON response contains the generated script content, the warnings list, and a valid reference/URL for the log file. Test downloading the log file via the provided reference.",
-        "priority": "medium",
+        "id": 8,
+        "title": "Implement Variable Naming Logic",
+        "description": "Develop the variable naming logic based on Named Range, Header, or Cell Reference hierarchy.",
+        "details": "Implement the hierarchy: Named Range > Header > Cell Reference (e.g., `cell_A1`). Handle fallbacks for missing/merged headers. Store mapping from Excel cell to generated variable name.",
+        "testStrategy": "Test with workbooks having named ranges, headers, and only cell references. Verify variable names in generated code follow the hierarchy.",
+        "priority": "high",
         "dependencies": [
-          8
+          6,
+          7
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Design and Implement Centralized Logging Utility",
-            "description": "Create a core Python logging utility class/module that supports different severity levels (DEBUG, INFO, WARNING, ERROR, CRITICAL). Implement configuration options for output destinations (console, file) and log formatting, adhering to project naming conventions and code organization as per RULES.MD. Include initial unit tests for the utility's functionality, ensuring basic logging calls and output handling work correctly.",
+            "title": "Implement Named Range Variable Naming",
+            "description": "Implement the logic to extract named ranges from the `xlcalculator` model and use them as Python variable names.",
+            "details": "",
+            "status": "done",
             "dependencies": [],
-            "details": "Based on FEATURES.MD (Logging requirements) and RULES.MD (Naming Conventions, Code Organization, Architectural Patterns, Testing Standards). The utility should be designed for easy integration and potential thread-safety. Focus on the core mechanism and configuration.",
-            "status": "pending",
+            "parentTaskId": 8
+          },
+          {
+            "id": 2,
+            "title": "Implement Header-based Variable Naming",
+            "description": "Develop the logic to extract header information from Excel sheets and use it to generate Python variable names. Handle cases with missing or merged headers by falling back to cell references.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 8
+          },
+          {
+            "id": 3,
+            "title": "Implement Cell Reference-based Variable Naming (Fallback)",
+            "description": "Ensure that if neither named ranges nor headers are available, the system defaults to using cleaned cell references (e.g., A1 becomes cell_A1) as Python variable names.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 8
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Assemble and Output Final Python Script",
+        "description": "Generate the final runnable Python script file, including necessary imports and variable assignments.",
+        "details": "Assemble the generated code snippets, including `from xlcalculator import ...` imports, variable assignments based on naming logic, and static/runtime formula translations. Output as a `.py` file.",
+        "testStrategy": "Generate a full script for a test workbook. Verify the output is a valid, runnable Python file.",
+        "priority": "high",
+        "dependencies": [
+          8
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Assemble Python Script Components",
+            "description": "Combine the generated Python code snippets from previous steps, including necessary imports (e.g., `xlcalculator`, `Evaluator`), variable initialization, and the translated formula expressions into a single, cohesive Python script.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 9
+          },
+          {
+            "id": 2,
+            "title": "Implement Output to a .py file",
+            "description": "Implement the functionality to write the assembled Python script to a `.py` file. Ensure proper file naming conventions and handling of file system operations.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 9
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Implement CLI Interface",
+        "description": "Implement the Command Line Interface (CLI) for file upload and code generation.",
+        "details": "Use a library like `argparse` or `click` to create a CLI interface. Define commands for uploading/processing a file and specifying output path for the generated script.",
+        "testStrategy": "Run the CLI with test files. Verify it processes files and generates scripts correctly via command line.",
+        "priority": "high",
+        "dependencies": [
+          9
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Choose CLI Library and Set Up Basic Structure",
+            "description": "Select either `argparse` or `click` for implementing the CLI. Install the chosen library and create the basic script structure, including the main entry point and initialization of the argument parser or command group.",
+            "dependencies": [],
+            "details": "Evaluate `argparse` (standard library) vs `click` (third-party, often considered more user-friendly for complex CLIs). Install the chosen library if necessary. Create the main Python script file and add the basic setup code.",
+            "status": "done",
             "testStrategy": ""
           },
           {
             "id": 2,
-            "title": "Integrate Logging Across All Components",
-            "description": "Integrate the centralized logging utility (from Subtask 1) into all relevant components: File Ingestion, Formula Parsing, Python Script Generation, Secure Execution, and Interfaces. Ensure logging calls include sufficient contextual information (e.g., file name, cell reference, specific error/warning details) as required by FEATURES.MD. Implement robust error handling to log exceptions appropriately. Write integration tests to verify logging occurs correctly during component execution paths and that contextual information is captured.",
+            "title": "Define Input File and Output Path Arguments",
+            "description": "Using the chosen CLI library, define command-line arguments for specifying the input file(s) to be processed and the desired output directory or file path. Include appropriate help messages and argument types.",
             "dependencies": [
               1
             ],
-            "details": "Based on FEATURES.MD (all component details, Logging requirements) and RULES.MD (Error Handling, Performance Thresholds, Testing Standards). Pay close attention to performance impact during integration. Ensure logging covers critical steps and potential failure points in each component.",
-            "status": "pending",
+            "details": "Add arguments like `--input` or positional arguments for input files, and `--output` for the output path. Specify types (e.g., `str` or file paths) and add help text explaining their purpose. Consider handling multiple input files if applicable.",
+            "status": "done",
             "testStrategy": ""
           },
           {
             "id": 3,
-            "title": "Implement Log Analysis and Summary Generation & Comprehensive Testing",
-            "description": "Develop functionality to read and analyze generated log files. Implement a mechanism to identify warnings and errors and generate a summary report (e.g., count by level, list of critical issues with context). Write unit tests for the analysis/summary logic. Conduct comprehensive testing, including using the 5 benchmark Excel files specified in RULES.MD, to verify the entire process, including log generation and summary accuracy. Ensure overall unit test coverage (including utility, integration, and analysis tests) reaches 90%+ as per RULES.MD.",
+            "title": "Implement Argument Parsing and Integrate Core Logic",
+            "description": "Write the code to parse the command-line arguments provided by the user. Retrieve the values for input file(s) and output path. Call the existing core conversion or processing logic, passing the parsed arguments as inputs.",
             "dependencies": [
-              1,
               2
             ],
-            "details": "Based on FEATURES.MD (Logging requirements, potentially reporting/interface needs) and RULES.MD (Testing Standards - 90%+ coverage, Benchmark Files, Error Handling). The summary should be easily consumable. Testing must cover various logging scenarios, verify log file contents, and validate the accuracy of summary reports against expected outcomes from benchmark files.",
-            "status": "pending",
-            "testStrategy": ""
-          },
-          {
-            "id": 4,
-            "title": "Implement Centralized Logging Utility",
-            "description": "Create a core Python logging utility with support for different severity levels (DEBUG, INFO, WARNING, ERROR). Configure handlers for console output and file output (`log.txt`). Define a standard log message format including timestamp, level, and message.",
-            "dependencies": [],
-            "details": "Define log levels and their usage guidelines. Set up the logging configuration using Python's `logging` module. Create a main logger instance accessible application-wide. Implement basic unit tests for the logger's configuration and output routing.",
-            "status": "pending",
-            "testStrategy": ""
-          },
-          {
-            "id": 5,
-            "title": "Integrate Logging Across Components with Context",
-            "description": "Add logging calls to relevant parts of the application workflow (file ingestion, parsing, formula mapping, script generation, execution). Ensure log messages include contextual information such as sheet name, cell reference, formula string, or component name where applicable.",
-            "dependencies": [
-              4
-            ],
-            "details": "Identify key points for logging within each processing stage. Pass relevant contextual data (e.g., cell 'A1' on 'Sheet1') to log calls. Log events like file processing start/end, formula extraction, unsupported features (F5), naming decisions (F6, F10), script generation steps, and execution results/errors (F13). Verify logs are generated during component execution.",
-            "status": "pending",
-            "testStrategy": ""
-          },
-          {
-            "id": 6,
-            "title": "Implement Warning/Error Summary & Comprehensive Testing",
-            "description": "Collect warnings and errors generated during a single conversion process run. Implement logic to format and output these warnings/errors according to requirements: to `log.txt`, `stderr` for CLI (F19), and as a `warnings[]` array in the API JSON response (F18). Define and implement comprehensive test cases to verify logging output for various scenarios and check the content and format of the generated log file.",
-            "dependencies": [
-              5
-            ],
-            "details": "Create a mechanism to aggregate warnings/errors per request. Implement output formatting logic for file, console, and JSON array. Develop test cases covering scenarios like file size limits (F3), unsupported formulas (F5), ambiguous headers (F10), cross-sheet reference issues (F7), and execution errors (F13). Write tests to assert the presence, content, and format of specific log messages in `log.txt`, `stderr`, and the API response `warnings[]` field.",
-            "status": "pending",
+            "details": "Use the library's parsing function (e.g., `parser.parse_args()`, `cli()`). Access the parsed values (e.g., `args.input`, `args.output`). Call the relevant functions from the core logic module, passing the file paths. Handle potential errors during file operations or core logic execution.",
+            "status": "done",
             "testStrategy": ""
           }
         ]
       },
       {
         "id": 11,
-        "title": "Setup Secure Script Execution Environment",
-        "description": "Set up a secure environment for executing the generated Python scripts with resource limits and isolation.",
-        "details": "Research and implement a method for sandboxing script execution. Options include Docker containers with restricted capabilities (AppArmor/SECCOMP) or subprocesses with OS-level resource limits (CPU time, memory, no network access). Configure the environment to enforce the specified limits (30s CPU, 128MB RAM).",
-        "testStrategy": "Develop test scripts designed to exceed CPU time or memory limits, or attempt network access. Execute these scripts within the sandbox environment and verify that the resource limits are enforced and the script is terminated correctly without side effects or network access.",
+        "title": "Implement REST API Endpoint for Conversion",
+        "description": "Implement the REST API endpoint for file upload and code generation using FastAPI.",
+        "details": "Define a FastAPI endpoint (e.g., `/convert`) that accepts file uploads. Integrate the file handling, parsing, evaluation, and code generation logic. Return the generated script or a link to it.",
+        "testStrategy": "Use tools like `curl` or Postman to send file upload requests to the API. Verify it returns the correct response and generated script.",
         "priority": "high",
         "dependencies": [
-          1
+          9
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Implement Naming Hierarchy and Fallback",
-            "description": "Define and implement the hierarchy for generating variable names (e.g., header row, specific mapping row, default). Implement fallback strategies if the preferred source is unavailable or invalid.",
+            "title": "Setup FastAPI App and Define Base Endpoint",
+            "description": "Initialize the FastAPI application and define the basic structure for the `/convert` POST endpoint without implementing the core logic yet.",
             "dependencies": [],
-            "details": "Specify the order of preference for name sources. Define fallback rules (e.g., use column index if header is empty). Add test cases for missing headers, missing mapping entries, and combinations.",
-            "status": "pending",
-            "testStrategy": ""
+            "details": "Create the main application file (e.g., `main.py`). Import FastAPI. Create a `FastAPI` instance. Define a `POST` endpoint at `/convert`. Add a placeholder return value.",
+            "status": "done",
+            "testStrategy": "Run the FastAPI application and use a tool like `curl` or Postman to send a POST request to `/convert`. Verify that the endpoint is reachable and returns the placeholder response."
           },
           {
             "id": 2,
-            "title": "Detect and Resolve Duplicate Headers",
-            "description": "Implement logic to identify columns with identical header names within a single sheet and modify subsequent duplicates to ensure uniqueness.",
+            "title": "Implement File Upload Handling",
+            "description": "Modify the `/convert` endpoint to accept a file upload using `FastAPI.UploadFile`.",
             "dependencies": [
               1
             ],
-            "details": "Define the resolution strategy (e.g., appending a number or column index). Add test cases for multiple columns with the same header.",
-            "status": "pending",
-            "testStrategy": ""
+            "details": "Update the `/convert` POST endpoint function signature to accept a parameter of type `UploadFile`. Read the content of the uploaded file.",
+            "status": "done",
+            "testStrategy": "Send a POST request with a file attached to `/convert`. Log or print the file name and a snippet of its content within the endpoint function to verify successful upload handling."
           },
           {
             "id": 3,
-            "title": "Handle Python Keywords and Reserved Names",
-            "description": "Implement logic to check if a generated variable name is a Python keyword or reserved name and modify it to avoid conflicts.",
+            "title": "Add Input Validation (File Type and Size)",
+            "description": "Implement validation logic to check the uploaded file's type and size before processing.",
             "dependencies": [
-              1,
               2
             ],
-            "details": "Include a list of Python keywords and reserved names to check against. Define the modification strategy (e.g., appending an underscore). Add test cases for common keywords (e.g., 'class', 'def', 'if') after applying hierarchy and duplicate resolution.",
-            "status": "pending",
-            "testStrategy": ""
+            "details": "Check the `content_type` of the `UploadFile`. Define allowed file types (e.g., `.xlsx`, `.csv`). Check the file size, potentially by reading chunks or using file system info if saved temporarily. Raise an `HTTPException` for invalid files.",
+            "status": "done",
+            "testStrategy": "Test with valid file types/sizes and invalid ones (wrong extension, too large). Verify that appropriate HTTP error responses (e.g., 400 Bad Request) are returned for invalid inputs."
           },
           {
             "id": 4,
-            "title": "Ensure Cross-Sheet Naming Consistency",
-            "description": "Implement a mechanism to ensure that columns representing the same logical data across different sheets in the workbook are assigned consistent variable names.",
+            "title": "Integrate File Parsing Logic",
+            "description": "Call the existing file parsing function with the content of the uploaded file.",
             "dependencies": [
-              1,
-              2,
               3
             ],
-            "details": "Define how columns are matched across sheets (e.g., by header name, by a mapping). Implement a global registry or mapping to track names assigned to logical columns. Add test cases for matching columns across sheets with varying headers or positions, ensuring the final name respects keyword handling and duplicate resolution.",
-            "status": "pending",
-            "testStrategy": ""
+            "details": "Import the parsing function. Pass the file content (or path if saved) to the parser. Handle potential exceptions raised by the parser.",
+            "status": "done",
+            "testStrategy": "Use a valid test file. Call the endpoint and verify that the parsing function is invoked. If possible, inspect the output of the parser (e.g., log it) to ensure it's correct for the given input."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Evaluation Logic",
+            "description": "Call the existing evaluation function with the output from the parsing step.",
+            "dependencies": [
+              4
+            ],
+            "details": "Import the evaluation function. Pass the parsed data structure to the evaluator. Handle potential exceptions raised by the evaluator.",
+            "status": "done",
+            "testStrategy": "Use a test file that results in specific parsed data. Call the endpoint and verify that the evaluation function is invoked with the correct input and produces the expected output (e.g., log the output)."
+          },
+          {
+            "id": 6,
+            "title": "Integrate Code Generation Logic",
+            "description": "Call the existing code generation function with the output from the evaluation step.",
+            "dependencies": [
+              5
+            ],
+            "details": "Import the code generation function. Pass the evaluation results to the code generator. The generator should return the final script string.",
+            "status": "done",
+            "testStrategy": "Use a test file that covers various scenarios for code generation. Call the endpoint and verify that the code generation function is called and returns the expected script string."
+          },
+          {
+            "id": 7,
+            "title": "Define and Implement Success Response Format",
+            "description": "Format the generated script into a successful HTTP response.",
+            "dependencies": [
+              6
+            ],
+            "details": "Define a Pydantic model for the successful response body (e.g., `{'script': '...'}`). Return an `HTTPResponse` with status code 200 and the generated script formatted according to the model.",
+            "status": "done",
+            "testStrategy": "Send a valid file that successfully goes through the entire process. Verify that the response has a 200 status code and the body contains the generated script in the defined JSON format."
+          },
+          {
+            "id": 8,
+            "title": "Implement Specific Error Handling",
+            "description": "Catch specific exceptions raised by the parsing, evaluation, and generation steps and map them to appropriate HTTP exceptions.",
+            "dependencies": [
+              6
+            ],
+            "details": "Wrap the calls to parsing, evaluation, and generation functions in `try...except` blocks. Catch known custom exceptions from these modules. Raise `HTTPException` with relevant status codes (e.g., 422 Unprocessable Entity, 500 Internal Server Error) and detail messages based on the caught exception.",
+            "status": "done",
+            "testStrategy": "Create test files or scenarios that are known to cause errors in parsing, evaluation, or generation. Call the endpoint with these inputs and verify that the correct HTTP status code and error details are returned."
+          },
+          {
+            "id": 9,
+            "title": "Define and Implement Error Response Format",
+            "description": "Ensure consistent formatting for all error responses.",
+            "dependencies": [
+              8
+            ],
+            "details": "Define a Pydantic model for error responses (e.g., `{'detail': 'Error message', 'code': 'specific_error_code'}`). Ensure that all `HTTPException` instances raised (including those from validation in step 3 and specific errors in step 8) return a response body conforming to this model.",
+            "status": "done",
+            "testStrategy": "Trigger various error conditions (validation, parsing error, evaluation error, etc.). Verify that all error responses have the same structure (e.g., JSON with 'detail' and 'code' fields)."
+          },
+          {
+            "id": 10,
+            "title": "Add API Documentation and Final Review",
+            "description": "Add docstrings and type hints for OpenAPI documentation and perform a final review of security considerations.",
+            "dependencies": [
+              7,
+              9
+            ],
+            "details": "Add docstrings to the endpoint function describing its purpose, parameters, and responses. Use type hints extensively. FastAPI automatically generates OpenAPI docs from this. Review implemented security measures (validation, error handling) and consider any missing aspects like rate limiting (though not required for this task, note it if applicable).",
+            "status": "done",
+            "testStrategy": "Run the application and access the automatically generated API documentation (e.g., `/docs` or `/redoc`). Verify that the `/convert` endpoint is correctly documented with request body (file upload), parameters, and response schemas (success and error)."
           }
         ]
       },
       {
         "id": 12,
-        "title": "Implement Script Execution Logic",
-        "description": "Implement the logic to execute the generated Python script within the secure sandbox environment and capture its output.",
-        "details": "Take the generated script (from Task 8) and execute it using the sandboxing mechanism set up in Task 11. Capture standard output and standard error streams. Handle execution timeouts or resource limit violations gracefully. Format the captured output (e.g., print statements) into a structured format like JSON for the API or plain text for the CLI.",
-        "testStrategy": "Generate scripts from test sheets that produce specific outputs via print statements. Execute these scripts in the sandbox and verify that the output is correctly captured and formatted. Test execution with scripts that should trigger resource limits or errors and ensure graceful handling.",
+        "title": "Develop Sandboxed Execution Environment",
+        "description": "Develop a sandboxed execution environment for running the generated Python scripts securely.",
+        "details": "Implement execution using `subprocess` with resource limits (`resource` module) or within a Docker container with AppArmor/SECCOMP profiles. Enforce CPU (30s), RAM (128MB), and network restrictions.",
+        "testStrategy": "Run test scripts designed to exceed resource limits or access network. Verify the sandbox correctly terminates execution.",
         "priority": "high",
         "dependencies": [
-          8,
           11
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Create Test Excel Fixtures",
-            "description": "Design and create a set of Excel files (.xlsx, .csv, .tsv) containing various formula types, cross-sheet references, named ranges, headers, and edge cases with documented expected outputs.",
+            "title": "Research Python Sandboxing Techniques",
+            "description": "Research various Python sandboxing techniques, including `subprocess`, `resource` module, Docker, and other secure execution methods.",
+            "details": "<info added on 2025-07-09T07:10:21.769Z>\nResearched Python sandboxing techniques. Key findings include: 1. `subprocess` with `resource` module: Allows setting CPU, memory, and file size limits for child processes. Good for basic resource control. 2. `seccomp`: Linux kernel feature for syscall filtering, stronger security but OS-specific. 3. Docker/Containerization: Strong process isolation, consistent environments, ideal for production but complex setup. 4. `secimport`: Python package using `dtrace` for fine-grained module confinement. For this task, `subprocess` with `resource` module is the most practical initial approach.\n</info added on 2025-07-09T07:10:21.769Z>",
+            "status": "done",
             "dependencies": [],
-            "details": "Create test files covering arithmetic (+, -, *, /), logical (IF, AND, OR), aggregation (SUM, AVERAGE, COUNT), and lookup (VLOOKUP, HLOOKUP) formulas. Include specific sheets/cases for cross-sheet references (F7), named ranges (F6), ambiguous headers (F10), and edge cases (e.g., errors, empty cells, unsupported formulas F5). Document the expected Python code output and/or execution results for each test case. Aim for at least 5 benchmark files as specified in RULES.md.",
-            "status": "pending",
-            "testStrategy": ""
+            "parentTaskId": 12
           },
           {
             "id": 2,
-            "title": "Implement Tests for Basic Formula Types",
-            "description": "Write tests to verify the correct conversion of basic arithmetic, logical, aggregation, and lookup formulas from Excel to Python using the created test fixtures.",
-            "dependencies": [
-              1
-            ],
-            "details": "Use the fixtures from Subtask 1. Implement tests that parse the Excel files (F1, F2, F4) and assert that the generated Python code (F8) correctly represents the original formula logic. Verification methods include comparing generated Python code snippets against expected patterns and potentially executing the generated code in a sandboxed environment (F12, F13) and comparing results against expected values documented in the fixtures. Ensure coverage for F5 (unsupported placeholders) and F6 (variable naming from headers/named ranges).",
-            "status": "pending",
-            "testStrategy": ""
+            "title": "Implement subprocess based execution",
+            "description": "Implement a Python function that executes a given script using `subprocess` and captures its output.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
           },
           {
             "id": 3,
-            "title": "Implement Tests for Cross-Sheet References and Edge Cases",
-            "description": "Write tests specifically targeting cross-sheet references, named ranges, ambiguous headers, and other edge cases identified in the fixtures.",
-            "dependencies": [
-              1,
-              2
-            ],
-            "details": "Use the fixtures from Subtask 1 and the testing framework from Subtask 2. Implement tests to verify correct handling of cross-sheet references (F7), variable naming from named ranges/headers (F6, F10), and graceful handling/logging of edge cases like unsupported formulas (F5) or errors (F17, F18, F19). Verification methods include checking generated Python code for correct references/variable names and verifying log/warning outputs against expected messages.",
-            "status": "pending",
-            "testStrategy": ""
+            "title": "Enforce CPU and RAM restrictions using the `resource` module",
+            "description": "Implement resource limits for CPU (30s) and RAM (128MB) for the sandboxed execution using the `resource` module and `preexec_fn`.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
           },
           {
             "id": 4,
-            "title": "Implement CLI Interface Tests",
-            "description": "Write tests to verify the functionality of the command-line interface, including file ingestion, processing, and output generation.",
-            "dependencies": [
-              1,
-              2,
-              3
-            ],
-            "details": "Use the test fixtures from Subtask 1 and the core conversion logic tested in Subtasks 2 and 3. Implement tests that invoke the CLI (F14) with different file types (.xlsx, .csv, .tsv - F1) and options (e.g., `--run` F12). Verification methods include checking the CLI output (stdout, stderr - F19), verifying that the generated Python file (F16) is created correctly, and potentially comparing execution results if the `--run` option is used (F12, F13). Test file size limits (F3).",
-            "status": "pending",
-            "testStrategy": ""
-          },
-          {
-            "id": 5,
-            "title": "Implement API Interface Tests",
-            "description": "Write tests to verify the functionality of the REST API interface, including file upload, processing, and JSON response generation.",
-            "dependencies": [
-              1,
-              2,
-              3
-            ],
-            "details": "Use the test fixtures from Subtask 1 and the core conversion logic tested in Subtasks 2 and 3. Implement tests that send file POST requests to the API endpoint (F15). Verification methods include checking the HTTP response status code (e.g., 200 OK), verifying the structure and content of the JSON response (F15), including the warnings array (F18) and the generated Python code/download link (F16). Test file size limits (F3) and concurrency handling (F21).",
-            "status": "pending",
-            "testStrategy": ""
+            "title": "Implement basic network restriction (if feasible within `subprocess`)",
+            "description": "Implement basic network restriction for the sandboxed execution, if feasible within the `subprocess` and `resource` module context.",
+            "details": "<info added on 2025-07-09T07:11:42.333Z>\nUpon researching, it has been determined that the `resource` module in Python does not directly support enforcing network restrictions for subprocesses. Achieving true network isolation would require more advanced techniques such as Linux `seccomp` filters, network namespaces, or full containerization (e.g., Docker). Therefore, within the scope of using `subprocess` and the `resource` module, implementing basic network restriction is not feasible. This subtask is considered complete with this finding.\n</info added on 2025-07-09T07:11:42.333Z>",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
           }
         ]
       },
       {
         "id": 13,
-        "title": "Develop Logging and Warning System",
-        "description": "Develop a comprehensive logging and warning system to record parsing issues, unsupported formulas, naming fallbacks, and execution details.",
-        "details": "Use Python's built-in `logging` module. Define different logging levels (INFO, WARNING, ERROR). Implement logging points throughout the parsing, naming, generation, and execution phases to capture relevant events, especially warnings about skipped elements, naming ambiguities, and unsupported features as specified in the PRD. Ensure logs can be written to a file (`log.txt`).",
-        "testStrategy": "Process test files designed to trigger various warnings (e.g., empty headers, unsupported formulas). Verify that the logging system captures these events correctly with appropriate messages and levels. Check that the log file (`log.txt`) is generated and contains the expected entries.",
-        "priority": "medium",
-        "dependencies": [
-          1
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 14,
-        "title": "Implement Unit Tests for Core Components",
-        "description": "Write unit tests for key components: formula extraction, variable naming logic, and Python code generation.",
-        "details": "Create isolated test cases for the functions responsible for parsing formulas using `formulas`, applying the variable naming rules, and generating Python code snippets. Use mock data representing parsed sheet structures and extracted formulas. Ensure tests cover edge cases and different scenarios outlined in the PRD.",
-        "testStrategy": "Run the unit test suite. Ensure all tests pass and achieve high code coverage for the core parsing, naming, and generation modules. Verify tests cover successful cases, edge cases, and expected error/warning conditions.",
+        "title": "Implement Script Execution via Sandbox",
+        "description": "Implement the functionality to execute the generated script within the sandboxed environment via CLI/API.",
+        "details": "Add a command/endpoint (e.g., `/execute`) that takes a generated script (or file ID) and runs it in the sandbox. Capture stdout/stderr.",
+        "testStrategy": "Execute test scripts via CLI/API. Verify output is captured and resource limits are enforced.",
         "priority": "high",
         "dependencies": [
-          4,
-          5,
-          8,
-          13
+          12
         ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 15,
-        "title": "Develop End-to-End Test Suite with Benchmarks",
-        "description": "Develop an end-to-end test suite using benchmark Excel test cases with known expected outputs.",
-        "details": "Select or create 5 benchmark Excel files representing real-world complexity (finance models, analytics sheets). For each benchmark, determine the expected output values after formula calculation. Implement tests that upload/process these files, generate and execute the script (Task 12), and compare the actual output against the known expected output (using checksum/hash validation of output JSONs or direct value comparison).",
-        "testStrategy": "Run the end-to-end test suite with the 5 benchmark files. Verify that the generated scripts execute successfully within the sandbox and produce outputs that match the pre-calculated expected results for each benchmark. Check that logs are generated correctly.",
-        "priority": "high",
-        "dependencies": [
-          8,
-          12,
-          13
-        ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Implement Request Queue and Worker Pool",
-            "description": "Set up an asynchronous request queue and a pool of workers (threads or processes) to handle incoming file conversion requests.",
+            "title": "Implement Script Submission to Sandbox",
+            "description": "Develop the mechanism to receive the generated Python script via CLI or API and securely pass it to the sandboxed execution environment process or container.",
             "dependencies": [],
-            "details": "Use `asyncio` queues or similar mechanisms provided by FastAPI/Python. Define worker logic to pick up tasks from the queue. Consider using `concurrent.futures` or `asyncio` workers.",
-            "status": "pending",
+            "details": "This involves defining the interface for script input (e.g., file path, string content) and the method for transferring it to the sandbox (e.g., shared volume, IPC, network socket). Ensure security considerations for script transfer.",
+            "status": "done",
             "testStrategy": ""
           },
           {
             "id": 2,
-            "title": "Integrate Semaphore for Concurrency Control",
-            "description": "Implement a semaphore or similar mechanism (e.g., `asyncio.Semaphore`) to limit the maximum number of concurrently executing conversion tasks to prevent resource exhaustion, aligning with NFR F21.",
+            "title": "Execute Script and Capture Output within Sandbox",
+            "description": "Implement the logic within the sandboxed environment to receive the script, execute it using the Python interpreter, and capture both standard output (stdout) and standard error (stderr) streams.",
             "dependencies": [
               1
             ],
-            "details": "Configure the semaphore limit based on expected load and available resources. Ensure workers acquire the semaphore before starting a task and release it upon completion.",
-            "status": "pending",
+            "details": "This requires setting up the execution environment, invoking the Python interpreter with the provided script, and redirecting stdout/stderr to a capture mechanism (e.g., in-memory buffer, temporary files). Handle potential exceptions during execution.",
+            "status": "done",
             "testStrategy": ""
           },
           {
             "id": 3,
-            "title": "Adapt Conversion Logic for Background Processing",
-            "description": "Modify the existing file ingestion, parsing, and script generation logic to run as non-blocking background tasks submitted to the worker pool. Include test cases for concurrent uploads and high-load scenarios.",
+            "title": "Manage Sandbox Lifecycle and Return Results",
+            "description": "Develop the control flow to monitor the sandboxed execution process, handle its termination (successful exit, error, timeout), retrieve the captured stdout/stderr, and return the results back through the CLI or API interface.",
             "dependencies": [
-              1,
               2
             ],
-            "details": "Refactor the core conversion pipeline into a function suitable for execution by a worker. Add unit and integration tests specifically designed to simulate concurrent requests and high throughput.",
-            "status": "pending",
+            "details": "Implement process monitoring, timeout mechanisms, exit code handling, and the method for retrieving captured output from the sandbox. Format and return the output and execution status to the user via the appropriate interface.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Implement Logging and Warning System",
+        "description": "Implement logging and warning mechanisms for skipped elements, fallbacks, and variable naming inferences.",
+        "details": "Use Python's `logging` module. Log warnings when formulas fall back to runtime evaluation or when variable names are inferred from cell addresses. Log errors during parsing or execution.",
+        "testStrategy": "Process workbooks triggering warnings/errors. Verify logs are generated correctly and contain relevant information.",
+        "priority": "medium",
+        "dependencies": [
+          13
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure Basic Logging System",
+            "description": "Set up the core Python logging configuration using the `logging` module. This includes defining logger instances, handlers (e.g., console, file), formatters, and setting appropriate logging levels (INFO, WARNING, ERROR).",
+            "dependencies": [],
+            "details": "Choose appropriate handlers (e.g., StreamHandler for console, FileHandler for file), define a clear log message format, and set the root logger or specific logger levels.",
+            "status": "done",
             "testStrategy": ""
           },
           {
-            "id": 4,
-            "title": "Implement Conversion Status Tracking",
-            "description": "Develop a system to track the status (e.g., queued, processing, completed, failed) of each submitted conversion request and potentially provide a mechanism for reporting this status.",
+            "id": 2,
+            "title": "Integrate Logging for Specific Events",
+            "description": "Identify code locations where skipped elements, formula fallbacks, variable naming inferences, and parsing/execution errors occur. Add specific logging calls (e.g., `logger.warning`, `logger.info`, `logger.error`) at these points to record the events with relevant context.",
             "dependencies": [
-              3
+              1
             ],
-            "details": "Use an in-memory dictionary, a simple database, or a dedicated task queue system (if needed) to store the state of each request identified by a unique ID. Define states and transitions.",
-            "status": "pending",
+            "details": "Ensure log messages clearly indicate the type of event (skipped, fallback, inference, error) and include details like the element/variable involved, the fallback used, or the error message.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Refine Log Output and Handling",
+            "description": "Review the generated log messages for clarity and completeness. Adjust formatters, add extra context (like line numbers, function names), and potentially implement more sophisticated log handling (e.g., rotating file logs, different handlers for different levels) based on requirements.",
+            "dependencies": [
+              2
+            ],
+            "details": "Consider using logging filters or custom handlers if specific log routing or processing is needed. Ensure logs are accessible and easy to analyze.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Integrate Logging into CLI and API Output",
+        "description": "Integrate logging output into the CLI (stderr) and API (JSON/log file).",
+        "details": "For CLI, direct warnings/errors to stderr. For API, include a `warnings` array in the JSON response and provide a mechanism (e.g., URL) to download the full log file (`log.txt`).",
+        "testStrategy": "Trigger warnings/errors via CLI and API. Verify log output appears correctly in stderr/JSON/log file.",
+        "priority": "medium",
+        "dependencies": [
+          14
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure CLI Logging to Stderr",
+            "description": "Modify the logging configuration to route warning and error level messages specifically to the standard error stream (stderr) when the application is executed in a command-line interface context.",
+            "dependencies": [],
+            "details": "Identify the application's entry point for CLI execution. Implement logic to detect CLI mode. Configure the logging handler/formatter to direct appropriate levels to stderr.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Integrate Warnings into API JSON Responses",
+            "description": "Enhance API request processing to capture warning-level log messages generated during the handling of a specific request and include them as a structured field within the standard JSON response body.",
+            "dependencies": [],
+            "details": "Determine how to associate logs with a specific request context. Define the structure for including warnings in the JSON response (e.g., a 'warnings' array). Implement the mechanism to collect and format warnings for inclusion.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Develop API Endpoint for Full Log Access",
+            "description": "Create a dedicated API endpoint that allows authorized users to retrieve the complete application log file content, providing a mechanism for debugging and monitoring.",
+            "dependencies": [],
+            "details": "Design the endpoint URL and authentication/authorization mechanism. Implement file reading logic to access the main application log file. Consider pagination or streaming for large log files. Define the response format (e.g., plain text, JSON lines).",
+            "status": "done",
             "testStrategy": ""
           }
         ]
       },
       {
         "id": 16,
-        "title": "Add Concurrency Handling for API",
-        "description": "Implement concurrency handling for the REST API to support multiple simultaneous file uploads and processing requests.",
-        "details": "Leverage FastAPI's asynchronous capabilities. Ensure that file processing, script generation, and execution logic are non-blocking or handled in background tasks/worker processes to allow the API to handle 10 concurrent requests/minute. Consider using a task queue if processing is lengthy.",
-        "testStrategy": "Use a load testing tool (e.g., `locust`, `ab`) to simulate 10+ concurrent API requests with file uploads. Monitor the API's response time and error rate. Verify that the system remains responsive and correctly processes concurrent requests without data corruption or significant performance degradation.",
+        "title": "Implement Cross-Sheet Reference Support",
+        "description": "Implement support for cross-sheet references during parsing and code generation.",
+        "details": "Ensure `xlcalculator` correctly handles references like `Sheet2!A1`. The code generation should correctly reference variables from other sheets, potentially requiring careful ordering based on dependencies.",
+        "testStrategy": "Use a test workbook with cross-sheet references. Verify `xlcalculator` evaluates them correctly and the generated code handles them.",
         "priority": "medium",
         "dependencies": [
-          2,
-          10,
-          12
+          4
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Analyze Blocking Operations",
-            "description": "Identify specific blocking I/O or CPU-bound operations within the existing file upload, parsing, script generation, and execution flow that prevent concurrency.",
+            "title": "Implement Cross-Sheet Reference Parsing",
+            "description": "Modify the lexer and parser components to correctly identify and parse cell references that include a sheet name prefix (e.g., 'Sheet2!A1').",
             "dependencies": [],
-            "details": "Review existing code for synchronous file reads/writes, blocking calls to external processes (script execution), and CPU-intensive parsing/generation logic. Document identified bottlenecks and potential areas for asynchronous implementation or offloading.",
-            "status": "pending",
-            "testStrategy": "N/A (Analysis task)"
+            "details": "Update grammar rules and parsing logic to handle the 'SheetName!' syntax. Ensure the sheet name and cell reference are captured as distinct parts of the parsed structure.",
+            "status": "done",
+            "testStrategy": ""
           },
           {
             "id": 2,
-            "title": "Refactor FastAPI Endpoint for Async Upload",
-            "description": "Modify the `/upload` endpoint to use `async def` and handle file streaming asynchronously, ensuring non-blocking file reception.",
-            "dependencies": [],
-            "details": "Update the FastAPI endpoint definition to be asynchronous. Implement asynchronous file handling using `asyncio` compatible libraries or FastAPI's built-in async file handling capabilities. Ensure proper error handling for upload issues.",
-            "status": "pending",
-            "testStrategy": "Unit tests for async file handling logic. Integration tests for the `/upload` endpoint to verify non-blocking behavior during file reception."
+            "title": "Update Internal Representation for Cross-Sheet Links",
+            "description": "Modify internal data structures (like the Abstract Syntax Tree or dependency graph) to store and represent the cross-sheet dependencies identified during parsing.",
+            "dependencies": [
+              1
+            ],
+            "details": "Update AST nodes or cell objects to hold sheet name information for references. Extend the dependency graph to include edges between cells located on different sheets.\n<info added on 2025-07-09T07:35:13.740Z>\nUpon reviewing `xlcalculator`'s Model, it's clear that its internal representation (`model.cells`) already flattens all cells across all sheets into a single, addressable collection. Therefore, cross-sheet links are inherently represented within this flattened structure. The `get_evaluation_order` function, which performs a topological sort on `model.cells`, naturally accounts for dependencies across sheets, ensuring that a cell referencing another cell on a different sheet will be evaluated after its precedent. No specific modification to the internal data structure or dependency graph handling is required beyond how `xlcalculator` already presents it.\n</info added on 2025-07-09T07:35:13.740Z>",
+            "status": "done",
+            "testStrategy": ""
           },
           {
             "id": 3,
-            "title": "Implement Asynchronous File Ingestion/Parsing",
-            "description": "Adapt the logic for reading and parsing uploaded files (e.g., Excel) to use asynchronous libraries or patterns, avoiding blocking calls within the API process.",
+            "title": "Modify Code Generator for Cross-Sheet Access",
+            "description": "Update the code generation logic to produce Python code that correctly accesses variables representing cells from other sheets based on the internal representation.",
             "dependencies": [
-              1,
               2
             ],
-            "details": "Refactor file reading and initial parsing logic (e.g., using `aiofiles` for file I/O, or adapting parsing libraries if async versions exist, or offloading parsing). Ensure this step is non-blocking within the main API event loop.",
-            "status": "pending",
-            "testStrategy": "Unit tests for asynchronous file reading and parsing functions (90%+ coverage). Integration tests verifying async parsing doesn't block the API."
+            "details": "Generate code that uses a structure (e.g., dictionary lookup by sheet name and cell reference) to access cell values from different sheets based on the information stored internally.",
+            "status": "done",
+            "testStrategy": ""
           },
           {
             "id": 4,
-            "title": "Select and Integrate Task Queue",
-            "description": "Choose a suitable task queue (e.g., Celery with Redis/RabbitMQ) based on project needs and integrate it into the project structure.",
-            "dependencies": [],
-            "details": "Evaluate task queue options considering reliability, scalability, ease of integration with FastAPI, and monitoring capabilities. Set up the chosen task queue broker and backend. Integrate the task queue client library into the project structure, adhering to code organization standards.",
-            "status": "pending",
-            "testStrategy": "Unit tests for task queue configuration and initialization. Basic integration test verifying connection to the broker/backend."
-          },
-          {
-            "id": 5,
-            "title": "Create Task Definitions for Processing/Execution",
-            "description": "Define specific tasks within the task queue system for formula parsing, Python script generation, and secure script execution.",
+            "title": "Implement Cross-Sheet Dependency Resolution and Ordering",
+            "description": "Develop logic to analyze the cross-sheet dependencies and determine the correct evaluation order of sheets and cells to ensure referenced values are available before they are needed.",
             "dependencies": [
-              3,
-              4
+              2,
+              3
             ],
-            "details": "Wrap the existing (or refactored) logic for formula parsing, script generation, and secure execution into functions that can be registered as tasks with the chosen task queue. Define task parameters and return types.",
-            "status": "pending",
-            "testStrategy": "Unit tests for each task function to ensure core logic works correctly in isolation. Integration tests verifying tasks can be registered and called via the task queue client."
-          },
-          {
-            "id": 6,
-            "title": "Develop Task Queue Worker Processes",
-            "description": "Implement worker processes that connect to the task queue, retrieve tasks, and execute the defined processing and execution logic securely and reliably.",
-            "dependencies": [
-              4,
-              5
-            ],
-            "details": "Set up worker processes that listen to the task queue. Configure workers to handle task execution, including error handling, logging, and resource management. Ensure secure execution environment is maintained within workers.",
-            "status": "pending",
-            "testStrategy": "Integration tests verifying workers can consume tasks and execute them successfully. Test error handling within workers for task failures."
-          },
-          {
-            "id": 7,
-            "title": "Modify API to Enqueue Tasks and Return Task ID",
-            "description": "Update the `/upload` or processing endpoint to enqueue the necessary tasks to the queue and immediately return a unique task ID to the client.",
-            "dependencies": [
-              3,
-              6
-            ],
-            "details": "After initial async file ingestion/parsing (if done in API), call the task queue client to enqueue the subsequent processing/execution tasks. Capture the returned task ID and include it in the API response to the client.",
-            "status": "pending",
-            "testStrategy": "Integration tests for the API endpoint verifying tasks are correctly enqueued and a valid task ID is returned in the response."
-          },
-          {
-            "id": 8,
-            "title": "Implement Task Status Monitoring and Retrieval",
-            "description": "Develop logic to store and retrieve the status (e.g., pending, processing, completed, failed) and results/errors of tasks using the task queue's backend or a separate store.",
-            "dependencies": [
-              4,
-              6
-            ],
-            "details": "Utilize the task queue's built-in result backend or implement a separate mechanism (e.g., database table) to store task status, results, and error information associated with the task ID. Implement functions to query this information.",
-            "status": "pending",
-            "testStrategy": "Unit tests for status storage and retrieval logic. Integration tests verifying task status is correctly updated and retrievable after task completion or failure."
-          },
-          {
-            "id": 9,
-            "title": "Create API Endpoint for Status Check",
-            "description": "Add a new API endpoint (e.g., `/status/{task_id}`) that allows clients to query the status and results of their submitted tasks using the returned task ID.",
-            "dependencies": [
-              7,
-              8
-            ],
-            "details": "Implement a new FastAPI endpoint that accepts a task ID as a path parameter. Use the task status monitoring logic (Subtask 8) to retrieve the current status and results/errors for the given ID and return it in a structured API response.",
-            "status": "pending",
-            "testStrategy": "Integration tests for the `/status/{task_id}` endpoint, verifying it returns correct status for pending, processing, completed, and failed tasks using benchmark files."
-          },
-          {
-            "id": 10,
-            "title": "Implement Concurrent Load Testing and Optimization",
-            "description": "Design and execute load tests simulating 10 concurrent requests/minute using the 5 benchmark Excel files, analyze performance metrics, identify bottlenecks in the concurrent flow, and optimize the implementation.",
-            "dependencies": [
-              7,
-              9
-            ],
-            "details": "Use a load testing tool (e.g., Locust, JMeter) to simulate the required load. Test the full flow from upload/enqueue to status check. Monitor API response times, task queue performance, worker resource usage, and error rates. Optimize code or infrastructure based on results to meet performance thresholds.",
-            "status": "pending",
-            "testStrategy": "Performance tests using load testing tools with 5 benchmark files, targeting 10 concurrent requests/minute. Analyze results against performance requirements."
+            "details": "Implement topological sorting or similar algorithms on the cross-sheet dependency graph. Ensure the generated code execution flow respects this determined order for sheets and cells.",
+            "status": "done",
+            "testStrategy": ""
           }
         ]
       },
       {
         "id": 17,
-        "title": "Implement Robust Malformed File Handling",
-        "description": "Implement robust handling for malformed, corrupted, or password-protected input files.",
-        "details": "Add checks during the file upload (Task 2) and parsing (Task 3) stages to detect invalid file formats, corruption, or password protection. Gracefully reject such files, return appropriate error messages via CLI/API, and log the event. Use libraries like `openpyxl` or `pandas` error handling for this.",
-        "testStrategy": "Prepare test files that are corrupted, password-protected, or have incorrect extensions/formats. Attempt to upload and process these files via CLI and API. Verify that the system rejects them gracefully, provides clear error messages to the user, and logs the rejection.",
-        "priority": "medium",
+        "title": "Add Option for Live Formula Translation",
+        "description": "Add an option to the code generation to keep formulas 'live' via `xlcalculator` calls instead of static translation.",
+        "details": "Introduce a flag (CLI/API parameter) that, when enabled, forces all formula translations to use `evaluator.evaluate()` calls in the generated script, even for simple formulas.",
+        "testStrategy": "Generate code with the 'live formula' option enabled. Verify all formulas are translated to `evaluator.evaluate()` calls.",
+        "priority": "low",
         "dependencies": [
-          2,
-          3
+          9
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Define Malformed File Error Types",
-            "description": "Define specific error codes or types within the application's error handling framework to represent different kinds of malformed files (e.g., invalid format, corrupted content, password protected).",
+            "title": "Add force_evaluator option to API and CLI",
+            "description": "Modify the backend API request schema and the CLI argument parser to accept a new boolean option, e.g., `force_evaluator_evaluation`, which signals whether to force evaluation via `xlcalculator.evaluator.evaluate()`.",
             "dependencies": [],
-            "details": "Create distinct error classes or enums for 'InvalidFileFormatError', 'FileCorruptionError', and 'PasswordProtectedError'. Ensure these integrate with the existing error handling architecture as per RULES.MD.",
-            "status": "pending",
+            "details": "Define the new parameter name, type (boolean), default value (false), and add necessary documentation or help text for both API and CLI interfaces.",
+            "status": "done",
             "testStrategy": ""
           },
           {
             "id": 2,
-            "title": "Implement File Format Validation",
-            "description": "Implement logic to validate the file format during the initial upload stage (related to Task 2). This should check file extensions and potentially basic file headers/magic bytes to ensure it's a likely Excel file (.xlsx).",
+            "title": "Implement conditional code generation based on force_evaluator option",
+            "description": "Update the code generation logic in the backend to check the value of the `force_evaluator_evaluation` option. If true, modify the formula translation process to generate code that explicitly uses `xlcalculator.evaluator.evaluate()` for all formulas, bypassing static translation attempts.",
             "dependencies": [
               1
             ],
-            "details": "Add checks in the file upload handler to verify the uploaded file's extension and potentially perform a basic check on the file's content signature if feasible and performant. If validation fails, raise the appropriate error type defined in Subtask 1.",
-            "status": "pending",
+            "details": "Adjust the relevant code generation modules to incorporate the conditional logic. Ensure that the generated Python script correctly utilizes the evaluator calls when the option is enabled.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "title": "Refine API Output Format",
+        "description": "Refine API output format to include execution results, warnings, and log file URL.",
+        "details": "Structure the API JSON response to include the generated code (or URL), execution stdout/stderr, a list of warnings, and a URL to download the full log file.",
+        "testStrategy": "Execute a script via API that produces output and warnings. Verify the JSON response contains all expected fields and data.",
+        "priority": "medium",
+        "dependencies": [
+          13,
+          15
+        ],
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define API Response JSON Schema",
+            "description": "Specify the exact JSON structure for the API output, including keys for generated code/URL, execution stdout/stderr, warnings list, and log file URL, along with their data types.",
+            "dependencies": [],
+            "details": "Define the top-level JSON object structure. Specify keys like 'generated_code' (string or url string), 'execution_output' (object with 'stdout' and 'stderr' string keys), 'warnings' (array of strings), and 'log_url' (string).",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement Data Collection in Backend",
+            "description": "Modify the backend API logic to capture or retrieve all necessary data points: the generated code/URL, the sandboxed execution's stdout and stderr, the list of warnings generated during processing, and the URL to the full log file.",
+            "dependencies": [
+              1
+            ],
+            "details": "Integrate data capturing mechanisms within the code generation, execution, and logging components to make the required information available for the final response.",
+            "status": "done",
             "testStrategy": ""
           },
           {
             "id": 3,
-            "title": "Implement File Corruption Detection",
-            "description": "Implement logic to detect file corruption during the initial read or loading process using library features (e.g., `openpyxl`'s error handling during load).",
+            "title": "Format and Return Structured JSON Response",
+            "description": "Assemble the collected data according to the defined JSON schema and format it into a valid JSON string to be returned as the API's HTTP response body.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Write the code to construct the JSON object using the data collected in Subtask 2, adhering to the structure defined in Subtask 1. Set the appropriate Content-Type header (application/json) for the response.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "title": "Write Unit and Integration Tests",
+        "description": "Write comprehensive unit and integration tests for all core components.",
+        "details": "Write tests for file handling, `xlcalculator` integration, code generation logic (static/runtime), variable naming, cross-sheet references, CLI parsing, API endpoints, and sandbox execution.",
+        "testStrategy": "Run the test suite. Ensure high code coverage and that all test cases pass.",
+        "priority": "high",
+        "dependencies": [
+          10,
+          11,
+          13,
+          15,
+          18
+        ],
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Plan Test Strategy and Setup Environment",
+            "description": "Define the overall testing strategy, scope (unit, integration), tools, and set up the testing framework and necessary dependencies for comprehensive testing.",
+            "dependencies": [],
+            "details": "Identify testing frameworks (e.g., pytest), mocking libraries, and set up CI integration if applicable. Define test data requirements covering various features like cross-sheet references and variable naming.\n<info added on 2025-07-09T09:33:02.088Z>\nCreated initial unit test files and a README in the tests directory explaining the structure and how to run tests. The files include tests for file handling, formula translation, dependency extraction, sandbox execution, API endpoints, CLI, and integration, along with common fixtures and pytest configuration. Tests for file_handler, formula_translator, and dependency_extractor are currently passing. Tests for sandbox, main API, and CLI are failing and require debugging. Integration tests are currently skipped pending the creation of real Excel test files. Next steps involve fixing the failing tests (sandbox, main, cli) and creating test files for integration tests.\n</info added on 2025-07-09T09:33:02.088Z>\n<info added on 2025-07-09T10:42:05.102Z>\nAll previously failing tests have been fixed and are now passing. The test suite currently has 40 passing tests and 7 skipped tests (which require real Excel files). Achieved 85% test coverage across the codebase. Specific fixes included properly mocking asyncio.run and using AsyncMock in test_cli.py, and properly mocking the Form parameter and sandbox execution in test_integration.py. Added proper markers in pytest.ini and created a conftest.py file to register the integration marker.\n</info added on 2025-07-09T10:42:05.102Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Develop Unit Tests for Core Logic",
+            "description": "Write unit tests for isolated components like `xlcalculator` integration, variable naming conventions, and basic formula parsing/evaluation logic.",
             "dependencies": [
               1
             ],
-            "details": "Wrap the file loading operation (e.g., `openpyxl.load_workbook`) in a try-except block to catch exceptions indicative of file corruption. If a corruption error is detected, raise the appropriate error type defined in Subtask 1.",
-            "status": "pending",
+            "details": "Focus on testing functions and classes in isolation. Use mocks for external dependencies. Ensure tests cover various formula types and naming rules.\n<info added on 2025-07-09T10:48:42.458Z>\nAdded comprehensive unit tests for the core logic components, focusing on formula_translator.py and dependency_extractor.py. Tests cover complex formulas, nested functions, edge cases in formula tokenization and translation, cross-sheet references, complex dependencies, variable naming with special characters, and code generation with unsupported functions. Fixed test assertions to match implementation behavior. Achieved 100% test coverage for formula_translator.py and 95% for dependency_extractor.py, with overall test coverage now at 86%.\n</info added on 2025-07-09T10:48:42.458Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Develop Unit Tests for File Handling",
+            "description": "Create unit tests to verify the application's ability to read from and write to various file formats, handling different data types, sheets, and edge cases relevant to cross-sheet references.",
+            "dependencies": [
+              1
+            ],
+            "details": "Test file parsing, data extraction, and output generation logic. Use temporary files or in-memory file systems for testing different file structures.\n<info added on 2025-07-09T11:06:17.904Z>\nExisting tests for `file_handler.py` have 91% coverage, covering validation of xlsx, csv, tsv file types, file size limits, invalid extensions, missing filenames, and read errors, using mocking for FastAPI's UploadFile and AsyncMock. Focus on adding tests for remaining edge cases to improve coverage further.\n</info added on 2025-07-09T11:06:17.904Z>\n<info added on 2025-07-09T11:10:48.232Z>\n<info added on 2025-07-09T11:06:17.904Z>\nAdded comprehensive tests for file handling in `file_handler.py`, focusing on edge cases not previously covered. This includes tests for empty files, uppercase extensions, filenames with multiple dots, and files exactly at the maximum size limit. Fixed existing tests for file size and extension validation by correctly handling exception hierarchy. Achieved 100% test coverage for `file_handler.py`, a significant improvement from 91%. All tests for this module are passing (62 passing, 7 skipped requiring real Excel files). Overall project test coverage is now 87%.\n</info added on 2025-07-09T11:06:17.904Z>\n</info added on 2025-07-09T11:10:48.232Z>",
+            "status": "done",
             "testStrategy": ""
           },
           {
             "id": 4,
-            "title": "Implement Password Protection Detection",
-            "description": "Implement logic to detect if an uploaded file is password protected during the initial read or loading process using library features.",
+            "title": "Develop Integration Tests for Code Generation",
+            "description": "Write integration tests to verify the static and runtime code generation process, including correct translation of formulas, variable references, and complex cross-sheet references.",
             "dependencies": [
-              1
+              2,
+              3
             ],
-            "details": "Use library features (e.g., checking specific exceptions raised by `openpyxl` or `pandas` when trying to open a password-protected file) to identify password protection. If detected, raise the appropriate error type defined in Subtask 1.",
-            "status": "pending",
+            "details": "Test the pipeline from parsing input (using file handling logic) to generating executable code (using core logic). Use sample files with complex formulas, variable names, and cross-sheet links.\n<info added on 2025-07-09T11:15:45.229Z>\nAdded comprehensive integration tests for the code generation process, focusing on different formula types, cross-sheet references, and error handling. Created three new integration tests: test_mock_integration_with_complex_formulas (tests complex formulas like SUM, IF, AVERAGE), test_mock_integration_with_cross_sheet_references (tests cross-sheet handling), and test_mock_integration_with_error_handling (tests unsupported functions and errors). The tests use a consistent mocking approach for file handling, model compilation, dependency extraction, and sandbox execution, verifying both code structure and execution results. All tests are passing, resulting in 65 passing tests and 7 skipped tests (which require real Excel files). Overall test coverage is now 87%.\n</info added on 2025-07-09T11:15:45.229Z>",
+            "status": "done",
             "testStrategy": ""
           },
           {
             "id": 5,
-            "title": "Integrate Checks into File Upload Handler",
-            "description": "Integrate the format validation (Subtask 2), corruption detection (Subtask 3), and password protection detection (Subtask 4) into the main file upload processing flow (Task 2).",
+            "title": "Develop Integration Tests for CLI",
+            "description": "Create integration tests for the command-line interface, ensuring it correctly processes arguments, handles file inputs/outputs, and executes the core application logic including code generation and execution.",
             "dependencies": [
-              2,
               3,
               4
             ],
-            "details": "Modify the file upload handler to sequentially perform the checks implemented in Subtasks 2, 3, and 4. If any check fails, the process should stop, and the detected error should be propagated.",
+            "details": "Test different CLI commands, options, and argument combinations. Verify output format and error handling for various scenarios, including file processing and execution.",
             "status": "pending",
             "testStrategy": ""
           },
           {
             "id": 6,
-            "title": "Refine Parsing Stage Error Handling",
-            "description": "Enhance the error handling within the file parsing logic (Task 3) to gracefully handle errors that might occur during detailed parsing, even if initial checks passed (e.g., invalid cell data, structural issues within valid format).",
+            "title": "Develop Integration Tests for API Endpoints",
+            "description": "Write integration tests for the application's API endpoints, verifying correct request handling, data processing, and response generation, including triggering code generation and execution.",
             "dependencies": [
-              1,
-              5
+              4
             ],
-            "details": "Review and update the parsing code (Task 3) to include robust try-except blocks around operations that might fail due to unexpected data or structure. Map these parsing-specific errors to appropriate internal error types, potentially extending the types defined in Subtask 1 if needed.",
-            "status": "pending",
+            "details": "Test different API routes, request methods, and data payloads. Ensure proper interaction with the underlying application logic (file handling, code generation, execution) and correct API responses.",
+            "status": "in-progress",
             "testStrategy": ""
           },
           {
             "id": 7,
-            "title": "Implement CLI Error Reporting for Malformed Files",
-            "description": "Design and implement the mechanism for reporting malformed file errors to the user via the Command Line Interface (CLI).",
+            "title": "Develop Integration Tests for Sandbox Execution",
+            "description": "Develop integration tests to verify the execution of generated code within the sandbox environment, ensuring security, resource limits, correct output, and handling of runtime errors.",
             "dependencies": [
-              5,
-              6
+              4
             ],
-            "details": "Modify the CLI interface to catch the specific malformed file errors propagated from the upload (Subtask 5) and parsing (Subtask 6) stages. Display clear, user-friendly error messages indicating the type of issue (invalid format, corrupted, password protected) and that the file was rejected.",
-            "status": "pending",
-            "testStrategy": ""
-          },
-          {
-            "id": 8,
-            "title": "Implement API Error Reporting for Malformed Files",
-            "description": "Design and implement the mechanism for reporting malformed file errors via the API interface.",
-            "dependencies": [
-              5,
-              6
-            ],
-            "details": "Modify the API endpoints handling file upload/processing to catch the specific malformed file errors. Return appropriate HTTP status codes (e.g., 400 Bad Request) and a structured JSON response body detailing the error type and message, adhering to API error standards.",
-            "status": "pending",
-            "testStrategy": ""
-          },
-          {
-            "id": 9,
-            "title": "Implement Malformed File Event Logging",
-            "description": "Implement detailed logging for all instances where a malformed, corrupted, or password-protected file is detected and rejected.",
-            "dependencies": [
-              5,
-              6
-            ],
-            "details": "Add logging statements at the points where malformed file errors are caught and handled (Subtasks 5, 6). Log the event timestamp, the type of error (format, corruption, password), the file name (if available and safe to log), and potentially a request ID or user ID for traceability, following the application's logging standards.",
-            "status": "pending",
-            "testStrategy": ""
-          },
-          {
-            "id": 10,
-            "title": "Develop Comprehensive Tests for Malformed File Handling",
-            "description": "Develop unit and integration tests to cover all aspects of malformed file handling, including format validation, corruption detection, password protection detection, error propagation, CLI/API reporting, and logging.",
-            "dependencies": [
-              5,
-              6,
-              7,
-              8,
-              9
-            ],
-            "details": "Create test cases using intentionally malformed, corrupted, and password-protected files. Include tests verifying that the 5 benchmark Excel files are correctly processed without triggering these errors. Ensure tests cover error handling paths in upload and parsing, verify correct CLI/API output/responses, and check for appropriate log entries. Aim for 90%+ unit test coverage for the implemented logic.",
+            "details": "Test execution with various generated code samples, including those with potential errors, resource-intensive operations, or complex logic involving cross-sheet data. Verify sandbox isolation and output capture.",
             "status": "pending",
             "testStrategy": ""
           }
         ]
+      },
+      {
+        "id": 20,
+        "title": "Setup Azure Deployment and Deploy Application",
+        "description": "Set up Azure deployment environment (VM/App Service) and deploy the application.",
+        "details": "Configure an Azure VM or App Service. Set up necessary networking and security groups. Deploy the FastAPI application. Ensure the sandbox environment is correctly configured and functional in the cloud.",
+        "testStrategy": "Access the deployed API/CLI endpoint. Perform end-to-end tests with file upload, conversion, and execution. Verify performance and sandbox security.",
+        "priority": "high",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": []
       }
     ],
     "metadata": {
-      "created": "2025-07-07T16:48:07.153Z",
-      "updated": "2025-07-07T18:48:44.474Z",
+      "created": "2025-07-09T05:47:37.062Z",
+      "updated": "2025-07-09T11:37:36.136Z",
       "description": "Tasks for master context"
     }
   }

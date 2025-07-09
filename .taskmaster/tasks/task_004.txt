@@ -1,37 +1,37 @@
 # Task ID: 4
-# Title: Integrate Formulas Library for Extraction
-# Status: pending
+# Title: Integrate `xlcalculator` for Parsing and Evaluation
+# Status: done
 # Dependencies: 3
 # Priority: high
-# Description: Integrate the 'formulas' library (v1.2.2) to extract formulas from the parsed Excel sheets.
+# Description: Integrate `xlcalculator` to parse the loaded workbook and evaluate formulas across all sheets.
 # Details:
-After parsing the file into a pandas DataFrame structure per sheet, iterate through cells in .xlsx sheets using `openpyxl` (or equivalent access via pandas if possible) to identify cells containing formulas. Use the `formulas` library's parsing capabilities to extract the formula string and potentially an initial representation. Focus on extracting the formula string itself at this stage.
+Use `xlcalculator.ModelCompiler().read_and_parse_archive()` for `.xlsx` or appropriate methods for `.csv`/`.tsv`. Handle potential parsing errors. Ensure all sheets are processed.
 
 # Test Strategy:
-Create test .xlsx files with various formulas in different cells and sheets. Run the extraction logic and verify that the formula strings from all formula-containing cells across all sheets are correctly identified and extracted using the `formulas` library.
+Load a test workbook with formulas across multiple sheets. Verify `xlcalculator` successfully parses and evaluates values.
 
 # Subtasks:
-## 1. Extract and Sanitize Headers [pending]
+## 1. Load File for xlcalculator [done]
 ### Dependencies: None
-### Description: Implement logic to extract potential variable names from spreadsheet headers. Sanitize extracted headers by converting to lowercase, replacing spaces with underscores, and removing/handling special characters.
+### Description: Implement the loading of the Excel/CSV/TSV file into a format `xlcalculator` can process.
 ### Details:
-Handle merged cells, empty headers, and headers containing non-alphanumeric characters. Ensure output is suitable for use as a base for Python variable names.
 
-## 2. Implement Primary Name Generation [pending]
+
+## 2. Parse Workbook with xlcalculator [done]
 ### Dependencies: 4.1
-### Description: Develop algorithms to generate variable names based on sanitized headers and potentially Named Ranges, adhering strictly to Python's snake_case convention.
+### Description: Utilize `xlcalculator.ModelCompiler().read_and_parse_archive()` or similar methods to parse the loaded workbook data.
 ### Details:
-Prioritize Named Ranges if available (as per F6). Apply snake_case formatting to sanitized headers. Handle potential conflicts with Python reserved keywords by appending a suffix (e.g., '_var').
 
-## 3. Implement Fallback Name Generation [pending]
-### Dependencies: 4.1
-### Description: Develop the fallback strategy for cells or ranges that do not have associated headers or Named Ranges, generating names in the format `cell_<col><row>` (e.g., `cell_A1`).
+
+## 3. Evaluate Formulas Across Sheets [done]
+### Dependencies: 4.2
+### Description: Implement logic to evaluate all formulas across all sheets in the parsed `xlcalculator` model.
 ### Details:
-This strategy applies when primary methods (headers, Named Ranges) fail or are unavailable. Ensure the generated format `cell_<col><row>` is consistently applied.
 
-## 4. Enforce Variable Name Uniqueness [pending]
+
+## 4. Handle Parsing/Evaluation Errors [done]
 ### Dependencies: 4.2, 4.3
-### Description: Implement a mechanism to ensure all generated variable names across the entire workbook are unique, regardless of their source (header, Named Range, fallback).
+### Description: Implement robust error handling for issues during `xlcalculator` parsing and formula evaluation.
 ### Details:
-Detect duplicate names resulting from different sources or ambiguous/duplicate headers (as per F10). Resolve duplicates by appending a unique suffix (e.g., '_1', '_2') to the generated name. Log instances of duplicate name resolution (as per F17).
+
 

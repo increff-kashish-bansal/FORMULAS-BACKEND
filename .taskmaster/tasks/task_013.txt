@@ -1,11 +1,31 @@
 # Task ID: 13
-# Title: Develop Logging and Warning System
+# Title: Implement Script Execution via Sandbox
 # Status: pending
-# Dependencies: 1
-# Priority: medium
-# Description: Develop a comprehensive logging and warning system to record parsing issues, unsupported formulas, naming fallbacks, and execution details.
+# Dependencies: 12
+# Priority: high
+# Description: Implement the functionality to execute the generated script within the sandboxed environment via CLI/API.
 # Details:
-Use Python's built-in `logging` module. Define different logging levels (INFO, WARNING, ERROR). Implement logging points throughout the parsing, naming, generation, and execution phases to capture relevant events, especially warnings about skipped elements, naming ambiguities, and unsupported features as specified in the PRD. Ensure logs can be written to a file (`log.txt`).
+Add a command/endpoint (e.g., `/execute`) that takes a generated script (or file ID) and runs it in the sandbox. Capture stdout/stderr.
 
 # Test Strategy:
-Process test files designed to trigger various warnings (e.g., empty headers, unsupported formulas). Verify that the logging system captures these events correctly with appropriate messages and levels. Check that the log file (`log.txt`) is generated and contains the expected entries.
+Execute test scripts via CLI/API. Verify output is captured and resource limits are enforced.
+
+# Subtasks:
+## 1. Implement Script Submission to Sandbox [pending]
+### Dependencies: None
+### Description: Develop the mechanism to receive the generated Python script via CLI or API and securely pass it to the sandboxed execution environment process or container.
+### Details:
+This involves defining the interface for script input (e.g., file path, string content) and the method for transferring it to the sandbox (e.g., shared volume, IPC, network socket). Ensure security considerations for script transfer.
+
+## 2. Execute Script and Capture Output within Sandbox [pending]
+### Dependencies: 13.1
+### Description: Implement the logic within the sandboxed environment to receive the script, execute it using the Python interpreter, and capture both standard output (stdout) and standard error (stderr) streams.
+### Details:
+This requires setting up the execution environment, invoking the Python interpreter with the provided script, and redirecting stdout/stderr to a capture mechanism (e.g., in-memory buffer, temporary files). Handle potential exceptions during execution.
+
+## 3. Manage Sandbox Lifecycle and Return Results [pending]
+### Dependencies: 13.2
+### Description: Develop the control flow to monitor the sandboxed execution process, handle its termination (successful exit, error, timeout), retrieve the captured stdout/stderr, and return the results back through the CLI or API interface.
+### Details:
+Implement process monitoring, timeout mechanisms, exit code handling, and the method for retrieving captured output from the sandbox. Format and return the output and execution status to the user via the appropriate interface.
+

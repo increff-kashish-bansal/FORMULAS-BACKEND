@@ -1,11 +1,31 @@
 # Task ID: 6
-# Title: Handle Cross-Sheet References
-# Status: pending
-# Dependencies: 4, 5
-# Priority: medium
-# Description: Add support for handling cross-sheet references within formulas.
+# Title: Implement Static Python Code Generation
+# Status: done
+# Dependencies: 5
+# Priority: high
+# Description: Implement the core code generation logic, translating simple formulas to static Python expressions where possible.
 # Details:
-When parsing formulas using the `formulas` library, identify references that point to cells in other sheets (e.g., `Sheet2!A1`). Ensure the variable naming logic (Task 5) can correctly generate names for these referenced cells in other sheets. The script generation (Task 8) must then correctly link these cross-sheet variables.
+Iterate through evaluated cells/formulas. For simple cases (e.g., `A1+B1`), generate equivalent Python code (`cell_A1 + cell_B1`). Use placeholder comments for complex/unsupported formulas initially.
 
 # Test Strategy:
-Create test .xlsx files with formulas referencing cells in other sheets. Verify that the parser correctly identifies these references and that the naming logic generates appropriate variable names for the referenced cells in the target sheets.
+Generate code for a workbook with simple math/logic formulas. Verify the output Python script contains correct static expressions.
+
+# Subtasks:
+## 1. Define Excel Function to Python Mapping [done]
+### Dependencies: None
+### Description: Define a mapping or a set of rules to translate common Excel functions (e.g., SUM, IF, AVERAGE) into their equivalent Python operations or standard library functions. Consider a dictionary-based approach for direct mappings.
+### Details:
+
+
+## 2. Generate Python Code for Simple Formulas [done]
+### Dependencies: 6.1
+### Description: Implement the logic to translate simple Excel formulas (e.g., A1+B1, IF(A1>0, X, Y)) into equivalent static Python expressions. This should involve using the defined mapping and handling basic arithmetic and logical operations.
+### Details:
+
+
+## 3. Implement Basic Excel Formula Lexer/Tokenizer [done]
+### Dependencies: None
+### Description: Create a function to tokenize an Excel formula string into meaningful parts (e.g., cell references, operators, function names, literals).
+### Details:
+
+

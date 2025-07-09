@@ -1,11 +1,31 @@
 # Task ID: 1
-# Title: Project Setup and Dependency Management
-# Status: pending
+# Title: Setup Project Repository and Structure
+# Status: done
 # Dependencies: None
 # Priority: high
-# Description: Set up the project repository, define the basic project structure, and add necessary dependencies, including pinning the 'formulas' library to version 1.2.2.
+# Description: Initialize the project repository, set up basic project structure, and configure version control.
 # Details:
-Initialize a git repository. Create project directories (e.g., `src`, `tests`, `docs`). Create a `requirements.txt` or equivalent dependency file. Add `fastapi`, `uvicorn`, `pandas`, `openpyxl`, `xlrd`, `formulas==1.2.2` (ensure compatibility with pandas/openpyxl), and any other required libraries. Set up a virtual environment.
+Create a new git repository. Set up a standard Python project structure (e.g., src/, tests/, docs/). Add a .gitignore file for common Python and OS files. Consider using a dependency manager like Poetry or Pipenv.
 
 # Test Strategy:
-Verify that all specified dependencies are installed correctly in the virtual environment and that the 'formulas' library is specifically version 1.2.2. Run a simple import test for key libraries.
+Verify repository is created, initial files are present, and .gitignore is configured correctly.
+
+# Subtasks:
+## 1. Initialize Git and Create Basic Structure [done]
+### Dependencies: None
+### Description: Initialize a new Git repository and create the standard project directories (src, tests, docs).
+### Details:
+Run 'git init' in the project root directory. Create the 'src', 'tests', and 'docs' directories.
+
+## 2. Configure .gitignore [done]
+### Dependencies: 1.1
+### Description: Create and populate the .gitignore file to exclude unnecessary files and directories from version control.
+### Details:
+Create a '.gitignore' file in the project root. Add common Python ignores such as __pycache__, .venv, build, dist, editor files, etc.
+
+## 3. Set Up Dependency Management [done]
+### Dependencies: 1.1
+### Description: Initialize a dependency manager (Poetry or Pipenv) for the project.
+### Details:
+Choose either Poetry or Pipenv. Run the appropriate initialization command (e.g., 'poetry init' or 'pipenv --python <version>') in the project root.
+

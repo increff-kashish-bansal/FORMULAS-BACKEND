@@ -1,49 +1,31 @@
 # Task ID: 10
-# Title: Implement REST API Output Generation
-# Status: pending
-# Dependencies: 8
-# Priority: medium
-# Description: Implement the output mechanism for the REST API, returning the generated script, execution output (if run), and a log URL.
+# Title: Implement CLI Interface
+# Status: done
+# Dependencies: 9
+# Priority: high
+# Description: Implement the Command Line Interface (CLI) for file upload and code generation.
 # Details:
-Define API response structure (JSON) including fields for the generated script content, execution results (if applicable, from Task 12), a list of warnings, and a URL/path to the log file. Serve the generated script and log file temporarily for download or include content directly in the JSON response where appropriate (e.g., warnings list).
+Use a library like `argparse` or `click` to create a CLI interface. Define commands for uploading/processing a file and specifying output path for the generated script.
 
 # Test Strategy:
-Call the API endpoint with test files. Verify that the JSON response contains the generated script content, the warnings list, and a valid reference/URL for the log file. Test downloading the log file via the provided reference.
+Run the CLI with test files. Verify it processes files and generates scripts correctly via command line.
 
 # Subtasks:
-## 1. Design and Implement Centralized Logging Utility [pending]
+## 1. Choose CLI Library and Set Up Basic Structure [done]
 ### Dependencies: None
-### Description: Create a core Python logging utility class/module that supports different severity levels (DEBUG, INFO, WARNING, ERROR, CRITICAL). Implement configuration options for output destinations (console, file) and log formatting, adhering to project naming conventions and code organization as per RULES.MD. Include initial unit tests for the utility's functionality, ensuring basic logging calls and output handling work correctly.
+### Description: Select either `argparse` or `click` for implementing the CLI. Install the chosen library and create the basic script structure, including the main entry point and initialization of the argument parser or command group.
 ### Details:
-Based on FEATURES.MD (Logging requirements) and RULES.MD (Naming Conventions, Code Organization, Architectural Patterns, Testing Standards). The utility should be designed for easy integration and potential thread-safety. Focus on the core mechanism and configuration.
+Evaluate `argparse` (standard library) vs `click` (third-party, often considered more user-friendly for complex CLIs). Install the chosen library if necessary. Create the main Python script file and add the basic setup code.
 
-## 2. Integrate Logging Across All Components [pending]
+## 2. Define Input File and Output Path Arguments [done]
 ### Dependencies: 10.1
-### Description: Integrate the centralized logging utility (from Subtask 1) into all relevant components: File Ingestion, Formula Parsing, Python Script Generation, Secure Execution, and Interfaces. Ensure logging calls include sufficient contextual information (e.g., file name, cell reference, specific error/warning details) as required by FEATURES.MD. Implement robust error handling to log exceptions appropriately. Write integration tests to verify logging occurs correctly during component execution paths and that contextual information is captured.
+### Description: Using the chosen CLI library, define command-line arguments for specifying the input file(s) to be processed and the desired output directory or file path. Include appropriate help messages and argument types.
 ### Details:
-Based on FEATURES.MD (all component details, Logging requirements) and RULES.MD (Error Handling, Performance Thresholds, Testing Standards). Pay close attention to performance impact during integration. Ensure logging covers critical steps and potential failure points in each component.
+Add arguments like `--input` or positional arguments for input files, and `--output` for the output path. Specify types (e.g., `str` or file paths) and add help text explaining their purpose. Consider handling multiple input files if applicable.
 
-## 3. Implement Log Analysis and Summary Generation & Comprehensive Testing [pending]
-### Dependencies: 10.1, 10.2
-### Description: Develop functionality to read and analyze generated log files. Implement a mechanism to identify warnings and errors and generate a summary report (e.g., count by level, list of critical issues with context). Write unit tests for the analysis/summary logic. Conduct comprehensive testing, including using the 5 benchmark Excel files specified in RULES.MD, to verify the entire process, including log generation and summary accuracy. Ensure overall unit test coverage (including utility, integration, and analysis tests) reaches 90%+ as per RULES.MD.
+## 3. Implement Argument Parsing and Integrate Core Logic [done]
+### Dependencies: 10.2
+### Description: Write the code to parse the command-line arguments provided by the user. Retrieve the values for input file(s) and output path. Call the existing core conversion or processing logic, passing the parsed arguments as inputs.
 ### Details:
-Based on FEATURES.MD (Logging requirements, potentially reporting/interface needs) and RULES.MD (Testing Standards - 90%+ coverage, Benchmark Files, Error Handling). The summary should be easily consumable. Testing must cover various logging scenarios, verify log file contents, and validate the accuracy of summary reports against expected outcomes from benchmark files.
-
-## 4. Implement Centralized Logging Utility [pending]
-### Dependencies: None
-### Description: Create a core Python logging utility with support for different severity levels (DEBUG, INFO, WARNING, ERROR). Configure handlers for console output and file output (`log.txt`). Define a standard log message format including timestamp, level, and message.
-### Details:
-Define log levels and their usage guidelines. Set up the logging configuration using Python's `logging` module. Create a main logger instance accessible application-wide. Implement basic unit tests for the logger's configuration and output routing.
-
-## 5. Integrate Logging Across Components with Context [pending]
-### Dependencies: 10.4
-### Description: Add logging calls to relevant parts of the application workflow (file ingestion, parsing, formula mapping, script generation, execution). Ensure log messages include contextual information such as sheet name, cell reference, formula string, or component name where applicable.
-### Details:
-Identify key points for logging within each processing stage. Pass relevant contextual data (e.g., cell 'A1' on 'Sheet1') to log calls. Log events like file processing start/end, formula extraction, unsupported features (F5), naming decisions (F6, F10), script generation steps, and execution results/errors (F13). Verify logs are generated during component execution.
-
-## 6. Implement Warning/Error Summary & Comprehensive Testing [pending]
-### Dependencies: 10.5
-### Description: Collect warnings and errors generated during a single conversion process run. Implement logic to format and output these warnings/errors according to requirements: to `log.txt`, `stderr` for CLI (F19), and as a `warnings[]` array in the API JSON response (F18). Define and implement comprehensive test cases to verify logging output for various scenarios and check the content and format of the generated log file.
-### Details:
-Create a mechanism to aggregate warnings/errors per request. Implement output formatting logic for file, console, and JSON array. Develop test cases covering scenarios like file size limits (F3), unsupported formulas (F5), ambiguous headers (F10), cross-sheet reference issues (F7), and execution errors (F13). Write tests to assert the presence, content, and format of specific log messages in `log.txt`, `stderr`, and the API response `warnings[]` field.
+Use the library's parsing function (e.g., `parser.parse_args()`, `cli()`). Access the parsed values (e.g., `args.input`, `args.output`). Call the relevant functions from the core logic module, passing the file paths. Handle potential errors during file operations or core logic execution.
 

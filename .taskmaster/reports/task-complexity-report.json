@@ -1,133 +1,173 @@
 {
 	"meta": {
-		"generatedAt": "2025-07-07T16:33:53.510Z",
-		"tasksAnalyzed": 15,
-		"totalTasks": 15,
-		"analysisCount": 15,
+		"generatedAt": "2025-07-09T05:48:18.900Z",
+		"tasksAnalyzed": 20,
+		"totalTasks": 20,
+		"analysisCount": 20,
 		"thresholdScore": 5,
 		"projectName": "Task Master",
-		"usedResearch": false
+		"usedResearch": true
 	},
 	"complexityAnalysis": [
 		{
 			"taskId": 1,
-			"taskTitle": "Setup Project Structure and Dependencies",
-			"complexityScore": 3,
+			"taskTitle": "Setup Project Repository and Structure",
+			"complexityScore": 2,
 			"recommendedSubtasks": 3,
-			"expansionPrompt": "Break down the project structure setup task into subtasks covering: 1) Creating the directory structure with all required folders and files, 2) Setting up the requirements.txt file with proper dependency versions, and 3) Implementing the setup.py file for package installation. For each subtask, include specific implementation details and validation steps.",
-			"reasoning": "This task involves creating a predefined directory structure and setting up configuration files. The complexity is relatively low as the structure is well-defined and the dependencies are explicitly listed. However, proper setup is critical for the project foundation, so it requires attention to detail."
+			"expansionPrompt": "Break down the task of setting up a Python project repository, including git initialization, basic directory structure (src, tests, docs), .gitignore configuration, and dependency manager setup (Poetry/Pipenv).",
+			"reasoning": "This is a standard, well-defined initial setup task with minimal technical unknowns."
 		},
 		{
 			"taskId": 2,
-			"taskTitle": "Implement File Upload and Validation",
-			"complexityScore": 4,
-			"recommendedSubtasks": 3,
-			"expansionPrompt": "Divide the file upload and validation implementation into subtasks covering: 1) CLI file upload handling with proper validation logic, 2) API file upload endpoint with multipart form handling, and 3) Shared validation utilities for consistent file type checking across both interfaces. Include error handling for various failure scenarios and test cases for each subtask.",
-			"reasoning": "This task requires implementing file handling in two different interfaces (CLI and API) with validation logic. The complexity is moderate as it involves handling different file types and implementing proper error handling, but the core functionality is well-defined in the task description."
+			"taskTitle": "Install Core Dependencies (`xlcalculator`, FastAPI)",
+			"complexityScore": 1,
+			"recommendedSubtasks": 2,
+			"expansionPrompt": "Detail the steps for installing core Python dependencies `xlcalculator` and `fastapi` using a chosen dependency manager (Poetry/Pipenv/pip), including locking dependencies.",
+			"reasoning": "A very straightforward task involving simple dependency installation commands."
 		},
 		{
 			"taskId": 3,
-			"taskTitle": "Implement Excel Formula Extraction",
-			"complexityScore": 7,
-			"recommendedSubtasks": 5,
-			"expansionPrompt": "Break down the Excel formula extraction implementation into subtasks covering: 1) Excel file parsing using the formulas library, 2) CSV/TSV file handling with pandas, 3) Formula extraction from individual cells, 4) Error handling for corrupted or unsupported formulas, and 5) Creating a unified data structure to represent extracted formulas regardless of source format. Include test cases for each file type and edge cases.",
-			"reasoning": "This task involves complex interactions with the formulas library and handling different file formats. The complexity is high because it requires deep understanding of Excel formula structures and proper error handling for various edge cases. The task is central to the application's functionality and requires careful implementation."
+			"taskTitle": "Implement File Loading and Validation",
+			"complexityScore": 4,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Outline the implementation steps for a file loading and validation module, covering file upload handling, extension checking (.xlsx, .csv, .tsv), size validation (<10MB), and raising specific errors for invalid files.",
+			"reasoning": "Involves basic file handling and multiple validation rules, requiring careful error handling."
 		},
 		{
 			"taskId": 4,
-			"taskTitle": "Implement Variable Naming Logic",
+			"taskTitle": "Integrate `xlcalculator` for Parsing and Evaluation",
 			"complexityScore": 6,
-			"recommendedSubtasks": 4,
-			"expansionPrompt": "Divide the variable naming logic implementation into subtasks covering: 1) Header extraction and sanitization for variable name prefixes, 2) Name generation algorithms following Python naming conventions, 3) Uniqueness enforcement to prevent variable name collisions, and 4) Fallback strategies for cells without headers. Include handling for edge cases like special characters, reserved keywords, and duplicate headers.",
-			"reasoning": "This task requires creating a robust naming system that follows Python conventions while maintaining meaningful relationships to the original Excel structure. The complexity is significant because it needs to handle various edge cases like duplicate names, invalid characters, and maintain consistency across the workbook."
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the integration of `xlcalculator` for parsing and evaluating Excel/CSV/TSV files, including handling different file types, processing all sheets, using `ModelCompiler`, and managing parsing/evaluation errors.",
+			"reasoning": "Core integration with an external library, requires understanding its API and handling potential parsing/evaluation issues across different file types and sheets."
 		},
 		{
 			"taskId": 5,
-			"taskTitle": "Implement Python Code Generation",
-			"complexityScore": 8,
-			"recommendedSubtasks": 6,
-			"expansionPrompt": "Break down the Python code generation implementation into subtasks covering: 1) Formula translation from Excel to Python syntax, 2) Function mapping for Excel built-in functions, 3) Cell reference resolution using the variable mapping, 4) Code structure generation with proper imports and sections, 5) Handling of unsupported functions with appropriate warnings, and 6) Output formatting for readability. Include test cases for different formula types and complexity levels.",
-			"reasoning": "This task involves translating Excel formulas to valid Python code, which is highly complex due to the differences in syntax and function behavior. It requires parsing formulas, mapping Excel functions to Python equivalents, resolving cell references, and generating syntactically correct code. The task is central to the application's purpose and requires careful implementation of many edge cases."
+			"taskTitle": "Extract Formula Dependency Relationships",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Detail the process of extracting formula dependency relationships from the `xlcalculator` model object, focusing on identifying which cells/formulas depend on others to build a dependency graph.",
+			"reasoning": "Requires analyzing the structure provided by `xlcalculator` to build a dependency graph, which might involve some exploration of the library's model."
 		},
 		{
 			"taskId": 6,
-			"taskTitle": "Implement Script Execution Engine",
+			"taskTitle": "Implement Static Python Code Generation",
 			"complexityScore": 7,
-			"recommendedSubtasks": 5,
-			"expansionPrompt": "Divide the script execution engine implementation into subtasks covering: 1) Subprocess execution with resource limitations, 2) Docker container execution with security constraints, 3) Output and error capturing mechanisms, 4) Timeout handling and process termination, and 5) Result formatting and reporting. Include security considerations and test cases for various execution scenarios including malicious code attempts.",
-			"reasoning": "This task involves creating a secure execution environment with proper resource limitations and security constraints. The complexity is high because it requires handling subprocess management, Docker integration, and security considerations to prevent malicious code execution. The dual implementation approach (subprocess and Docker) adds additional complexity."
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Outline the implementation steps for static Python code generation from Excel formulas, including iterating through evaluated cells, translating simple formulas (math, logic) to Python expressions, and handling complex/unsupported cases with placeholders.",
+			"reasoning": "This is a core, complex logic task involving translating one language/format (Excel formulas) into another (Python), requiring handling various formula types and edge cases."
 		},
 		{
 			"taskId": 7,
-			"taskTitle": "Implement CLI Interface",
+			"taskTitle": "Implement Runtime `xlcalculator` Fallback Generation",
 			"complexityScore": 5,
-			"recommendedSubtasks": 4,
-			"expansionPrompt": "Break down the CLI interface implementation into subtasks covering: 1) Command structure and argument parsing with Typer, 2) File handling and validation integration, 3) Conversion pipeline orchestration calling the appropriate modules, and 4) Output formatting and error reporting. Include test cases for various command-line arguments and error scenarios.",
-			"reasoning": "This task requires implementing a command-line interface that integrates all the previously developed components. The complexity is moderate as it involves orchestrating the conversion pipeline and handling various command-line arguments, but the core functionality is built on existing components."
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Detail the implementation of runtime fallback code generation for complex or unsupported Excel formulas, focusing on identifying such formulas and generating Python code that uses `xlcalculator`'s `evaluator.evaluate()` method.",
+			"reasoning": "Builds upon the static generation, focusing on the specific logic for generating runtime calls for complex cases."
 		},
 		{
 			"taskId": 8,
-			"taskTitle": "Implement REST API",
-			"complexityScore": 6,
+			"taskTitle": "Implement Variable Naming Logic",
+			"complexityScore": 7,
 			"recommendedSubtasks": 5,
-			"expansionPrompt": "Divide the REST API implementation into subtasks covering: 1) FastAPI endpoint setup for file uploads, 2) Conversion pipeline integration, 3) Result storage and retrieval mechanisms, 4) Error handling and status reporting, and 5) File cleanup and management. Include test cases for various API requests and error scenarios, as well as considerations for concurrent requests.",
-			"reasoning": "This task involves creating a REST API with file upload handling, conversion pipeline integration, and result management. The complexity is significant because it requires handling asynchronous operations, file storage, and proper error reporting in an API context. The temporary file management adds additional complexity."
+			"expansionPrompt": "Break down the implementation of variable naming logic for generated Python code, covering the hierarchy (Named Range, Header, Cell Reference), handling missing/merged headers, and mapping Excel cell references to generated variable names.",
+			"reasoning": "Involves implementing a multi-level hierarchical logic with several potential edge cases (missing headers, merged cells, invalid names) and maintaining a mapping."
 		},
 		{
 			"taskId": 9,
-			"taskTitle": "Implement Cross-Sheet Reference Support",
-			"complexityScore": 7,
-			"recommendedSubtasks": 4,
-			"expansionPrompt": "Break down the cross-sheet reference support implementation into subtasks covering: 1) Detecting and parsing cross-sheet references in formulas, 2) Building dependency graphs between sheets, 3) Ordering sheet processing based on dependencies, and 4) Resolving cross-sheet references in the generated code. Include test cases for various cross-sheet reference scenarios including circular references.",
-			"reasoning": "This task requires enhancing the formula extraction and code generation to handle references between different sheets. The complexity is high because it involves building dependency graphs, detecting circular references, and ensuring sheets are processed in the correct order. This is an advanced feature that builds on the core functionality."
+			"taskTitle": "Assemble and Output Final Python Script",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Outline the steps for assembling and outputting the final runnable Python script, including combining imports, variable assignments, static/runtime formula code, and writing the output to a .py file.",
+			"reasoning": "Putting together the pieces generated by previous steps into a coherent, runnable script file."
 		},
 		{
 			"taskId": 10,
-			"taskTitle": "Implement Logging and Warning System",
-			"complexityScore": 5,
+			"taskTitle": "Implement CLI Interface",
+			"complexityScore": 4,
 			"recommendedSubtasks": 3,
-			"expansionPrompt": "Divide the logging and warning system implementation into subtasks covering: 1) Creating a centralized logging utility with different severity levels, 2) Integrating logging throughout all components with contextual information, and 3) Implementing summary generation for warnings and errors. Include test cases for various logging scenarios and verification of log file contents.",
-			"reasoning": "This task involves creating a comprehensive logging system that tracks issues during the conversion process. The complexity is moderate as it requires integrating logging throughout all components and providing meaningful context for warnings and errors. The centralized approach adds some complexity but improves maintainability."
+			"expansionPrompt": "Detail the implementation of a Command Line Interface (CLI) using `argparse` or `click`, including defining commands for file processing and output path, and integrating the core conversion logic.",
+			"reasoning": "Standard CLI development using a library, requires integrating existing core logic."
 		},
 		{
 			"taskId": 11,
-			"taskTitle": "Implement Consistent Variable Naming Scheme",
+			"taskTitle": "Implement REST API Endpoint for Conversion",
 			"complexityScore": 6,
-			"recommendedSubtasks": 4,
-			"expansionPrompt": "Break down the variable naming scheme implementation into subtasks covering: 1) Handling Python keywords and reserved names, 2) Implementing naming hierarchy with fallback strategies, 3) Detecting and resolving duplicate headers, and 4) Ensuring cross-sheet naming consistency. Include test cases for various naming scenarios and edge cases.",
-			"reasoning": "This task enhances the variable mapping to ensure consistent and Python-compliant variable names. The complexity is significant because it needs to handle various edge cases like Python keywords, duplicate headers, and maintain consistency across the workbook. This builds on the basic variable naming logic with more sophisticated handling."
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the implementation of a REST API endpoint using FastAPI for file upload and code generation, covering endpoint definition, handling file uploads via HTTP, integrating the file processing and code generation logic, and returning the generated script.",
+			"reasoning": "Web development task involving file uploads, integrating core logic into an API context, and handling HTTP responses."
 		},
 		{
 			"taskId": 12,
-			"taskTitle": "Implement End-to-End Testing Suite",
-			"complexityScore": 7,
-			"recommendedSubtasks": 5,
-			"expansionPrompt": "Divide the end-to-end testing suite implementation into subtasks covering: 1) Creating test fixtures with known formulas and expected outputs, 2) Implementing tests for different formula types (arithmetic, logical, aggregation, lookup), 3) Testing cross-sheet references and edge cases, 4) Testing CLI interface functionality, and 5) Testing API interface functionality. Include verification methods for each test case.",
-			"reasoning": "This task involves creating a comprehensive testing suite that validates the entire conversion process. The complexity is high because it requires creating test fixtures for various formula types, implementing verification methods, and testing both CLI and API interfaces. Proper test coverage is critical for ensuring the application works correctly."
+			"taskTitle": "Develop Sandboxed Execution Environment",
+			"complexityScore": 9,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Outline the development of a secure sandboxed execution environment for Python scripts, including researching and implementing methods like `subprocess` with resource limits, Docker containers, or security profiles (AppArmor/SECCOMP), and enforcing CPU, RAM, and network restrictions.",
+			"reasoning": "Highly complex and security-critical task. Requires deep technical knowledge of process isolation, resource control, and potential security vulnerabilities."
 		},
 		{
 			"taskId": 13,
-			"taskTitle": "Implement Azure Deployment Configuration",
-			"complexityScore": 6,
-			"recommendedSubtasks": 4,
-			"expansionPrompt": "Break down the Azure deployment configuration implementation into subtasks covering: 1) Creating a Dockerfile for containerization, 2) Setting up Azure App Service configuration, 3) Implementing VM deployment scripts, and 4) Creating CI/CD workflows for automated deployment. Include testing procedures for each deployment method.",
-			"reasoning": "This task involves creating deployment configurations for Azure. The complexity is significant because it requires knowledge of Docker containerization, Azure services, and CI/CD workflows. The multiple deployment options (VM and App Service) add additional complexity."
+			"taskTitle": "Implement Script Execution via Sandbox",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Detail the implementation of executing generated Python scripts within the sandboxed environment via the CLI and API, including passing the script to the sandbox, capturing stdout/stderr, and handling sandbox termination.",
+			"reasoning": "Integration task connecting the core logic/interfaces with the sandboxed execution environment."
 		},
 		{
 			"taskId": 14,
-			"taskTitle": "Implement Performance Optimization",
-			"complexityScore": 7,
-			"recommendedSubtasks": 4,
-			"expansionPrompt": "Divide the performance optimization implementation into subtasks covering: 1) Formula parsing caching mechanisms, 2) Parallel processing for large workbooks, 3) Memory usage optimization for code generation, and 4) Performance monitoring and reporting. Include benchmarking methods for measuring improvements and test cases with various file sizes.",
-			"reasoning": "This task involves optimizing the conversion process to meet performance requirements. The complexity is high because it requires implementing caching, parallel processing, and memory optimizations while maintaining correctness. Performance tuning requires careful measurement and testing with various workbook sizes."
+			"taskTitle": "Implement Logging and Warning System",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Outline the implementation of a comprehensive logging and warning system using Python's `logging` module, focusing on logging skipped elements, formula fallbacks, variable naming inferences, and errors during parsing or execution.",
+			"reasoning": "Standard logging setup, requires identifying specific points in the code where logging is needed."
 		},
 		{
 			"taskId": 15,
-			"taskTitle": "Implement Concurrency Handling",
-			"complexityScore": 7,
+			"taskTitle": "Integrate Logging into CLI and API Output",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Detail the integration of the logging output into the CLI (directing warnings/errors to stderr) and the API (including warnings in JSON response and providing a mechanism for accessing the full log file).",
+			"reasoning": "Requires routing and formatting log output differently based on the interface (CLI vs. API)."
+		},
+		{
+			"taskId": 16,
+			"taskTitle": "Implement Cross-Sheet Reference Support",
+			"complexityScore": 5,
 			"recommendedSubtasks": 4,
-			"expansionPrompt": "Break down the concurrency handling implementation into subtasks covering: 1) Request queue and worker pool implementation, 2) Semaphore-based concurrency control, 3) Background task processing for queued requests, and 4) Status tracking and reporting for ongoing conversions. Include test cases for concurrent uploads and high-load scenarios.",
-			"reasoning": "This task enhances the API to handle concurrent uploads and ensure scalability. The complexity is high because it requires implementing asynchronous processing, request queuing, and proper resource management. Handling concurrent file processing adds significant complexity to the system."
+			"expansionPrompt": "Break down the implementation of support for cross-sheet references in parsing and code generation, ensuring `xlcalculator` handles them and the generated Python code correctly references variables defined in other sheets, potentially requiring dependency-based ordering.",
+			"reasoning": "Requires handling references that span different parts of the input model and ensuring correct ordering in the generated code."
+		},
+		{
+			"taskId": 17,
+			"taskTitle": "Add Option for Live Formula Translation",
+			"complexityScore": 3,
+			"recommendedSubtasks": 2,
+			"expansionPrompt": "Outline the steps to add an option (CLI/API parameter) to force all formula translations in the generated Python script to use `xlcalculator`'s `evaluator.evaluate()` calls, overriding static translation.",
+			"reasoning": "A relatively simple feature flag that modifies existing code generation behavior."
+		},
+		{
+			"taskId": 18,
+			"taskTitle": "Refine API Output Format",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Detail the refinement of the API output format to a structured JSON response, including fields for the generated code (or URL), sandboxed execution stdout/stderr, a list of warnings, and a URL to the full log file.",
+			"reasoning": "Designing and implementing the structure of the API response to include multiple data points."
+		},
+		{
+			"taskId": 19,
+			"taskTitle": "Write Unit and Integration Tests",
+			"complexityScore": 8,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Outline the process of writing comprehensive unit and integration tests for the application, covering file handling, `xlcalculator` integration, code generation (static/runtime), variable naming, cross-sheet references, CLI, API endpoints, and sandbox execution.",
+			"reasoning": "Broad scope covering testing for multiple components and their interactions across the entire application. Essential but time-consuming and requires thoroughness."
+		},
+		{
+			"taskId": 20,
+			"taskTitle": "Setup Azure Deployment and Deploy Application",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the process of setting up Azure deployment for the application, including configuring a VM/App Service, networking, security groups, deploying the FastAPI application, and ensuring the sandboxed execution environment functions correctly in the Azure environment.",
+			"reasoning": "Involves cloud infrastructure setup, configuration, deployment, and ensuring complex components like the sandbox function correctly in a cloud environment."
 		}
 	]
 }

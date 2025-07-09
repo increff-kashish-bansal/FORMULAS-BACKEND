@@ -1,61 +1,73 @@
 # Task ID: 11
-# Title: Setup Secure Script Execution Environment
-# Status: pending
-# Dependencies: 1
+# Title: Implement REST API Endpoint for Conversion
+# Status: done
+# Dependencies: 9
 # Priority: high
-# Description: Set up a secure environment for executing the generated Python scripts with resource limits and isolation.
+# Description: Implement the REST API endpoint for file upload and code generation using FastAPI.
 # Details:
-Research and implement a method for sandboxing script execution. Options include Docker containers with restricted capabilities (AppArmor/SECCOMP) or subprocesses with OS-level resource limits (CPU time, memory, no network access). Configure the environment to enforce the specified limits (30s CPU, 128MB RAM).
+Define a FastAPI endpoint (e.g., `/convert`) that accepts file uploads. Integrate the file handling, parsing, evaluation, and code generation logic. Return the generated script or a link to it.
 
 # Test Strategy:
-Develop test scripts designed to exceed CPU time or memory limits, or attempt network access. Execute these scripts within the sandbox environment and verify that the resource limits are enforced and the script is terminated correctly without side effects or network access.
+Use tools like `curl` or Postman to send file upload requests to the API. Verify it returns the correct response and generated script.
 
 # Subtasks:
-## 1. Implement Naming Hierarchy and Fallback [pending]
+## 1. Setup FastAPI App and Define Base Endpoint [done]
 ### Dependencies: None
-### Description: Define and implement the hierarchy for generating variable names (e.g., header row, specific mapping row, default). Implement fallback strategies if the preferred source is unavailable or invalid.
+### Description: Initialize the FastAPI application and define the basic structure for the `/convert` POST endpoint without implementing the core logic yet.
 ### Details:
-Specify the order of preference for name sources. Define fallback rules (e.g., use column index if header is empty). Add test cases for missing headers, missing mapping entries, and combinations.
+Create the main application file (e.g., `main.py`). Import FastAPI. Create a `FastAPI` instance. Define a `POST` endpoint at `/convert`. Add a placeholder return value.
 
-## 2. Detect and Resolve Duplicate Headers [pending]
+## 2. Implement File Upload Handling [done]
 ### Dependencies: 11.1
-### Description: Implement logic to identify columns with identical header names within a single sheet and modify subsequent duplicates to ensure uniqueness.
+### Description: Modify the `/convert` endpoint to accept a file upload using `FastAPI.UploadFile`.
 ### Details:
-Define the resolution strategy (e.g., appending a number or column index). Add test cases for multiple columns with the same header.
+Update the `/convert` POST endpoint function signature to accept a parameter of type `UploadFile`. Read the content of the uploaded file.
 
-## 3. Handle Python Keywords and Reserved Names [pending]
-### Dependencies: 11.1, 11.2
-### Description: Implement logic to check if a generated variable name is a Python keyword or reserved name and modify it to avoid conflicts.
+## 3. Add Input Validation (File Type and Size) [done]
+### Dependencies: 11.2
+### Description: Implement validation logic to check the uploaded file's type and size before processing.
 ### Details:
-Include a list of Python keywords and reserved names to check against. Define the modification strategy (e.g., appending an underscore). Add test cases for common keywords (e.g., 'class', 'def', 'if') after applying hierarchy and duplicate resolution.
+Check the `content_type` of the `UploadFile`. Define allowed file types (e.g., `.xlsx`, `.csv`). Check the file size, potentially by reading chunks or using file system info if saved temporarily. Raise an `HTTPException` for invalid files.
 
-## 4. Ensure Cross-Sheet Naming Consistency [pending]
-### Dependencies: 11.1, 11.2, 11.3
-### Description: Implement a mechanism to ensure that columns representing the same logical data across different sheets in the workbook are assigned consistent variable names.
+## 4. Integrate File Parsing Logic [done]
+### Dependencies: 11.3
+### Description: Call the existing file parsing function with the content of the uploaded file.
 ### Details:
-Define how columns are matched across sheets (e.g., by header name, by a mapping). Implement a global registry or mapping to track names assigned to logical columns. Add test cases for matching columns across sheets with varying headers or positions, ensuring the final name respects keyword handling and duplicate resolution.
+Import the parsing function. Pass the file content (or path if saved) to the parser. Handle potential exceptions raised by the parser.
 
-## 5. Handle Python Keywords and Reserved Names [pending]
-### Dependencies: None
-### Description: Implement logic to check generated variable names against Python's reserved keywords and built-in function names. If a conflict is found, modify the name (e.g., by appending an underscore or prefix) to avoid syntax errors.
+## 5. Integrate Evaluation Logic [done]
+### Dependencies: 11.4
+### Description: Call the existing evaluation function with the output from the parsing step.
 ### Details:
-This involves maintaining a list of Python keywords and built-in names. Test cases should include headers like 'class', 'def', 'import', 'list', 'dict', etc., and verify that they are transformed into valid Python identifiers like 'class_', 'def_', 'import_', 'list_', 'dict_'.
+Import the evaluation function. Pass the parsed data structure to the evaluator. Handle potential exceptions raised by the evaluator.
 
-## 6. Implement Naming Hierarchy and Fallbacks [pending]
+## 6. Integrate Code Generation Logic [done]
 ### Dependencies: 11.5
-### Description: Develop the core logic for assigning variable names based on the defined hierarchy: Named Range > Header > cell_A1. Include fallback mechanisms for cases where Named Ranges or valid Headers are not available.
+### Description: Call the existing code generation function with the output from the evaluation step.
 ### Details:
-Prioritize Named Ranges if they exist for a cell. If not, look for associated headers (considering common header patterns). If neither is found, default to the cell reference format (e.g., 'cell_A1'). Ensure names generated from headers follow the specified convention (snake_case, lowercase, '_' separator). Test cases should cover cells with Named Ranges, cells under clear headers, cells under ambiguous/merged headers (handled in a later task, but the fallback to header logic is here), and cells with no apparent header.
+Import the code generation function. Pass the evaluation results to the code generator. The generator should return the final script string.
 
-## 7. Detect and Resolve Duplicate Headers/Names [pending]
+## 7. Define and Implement Success Response Format [done]
 ### Dependencies: 11.6
-### Description: Implement logic to detect when the naming process (especially from headers) results in duplicate variable names within the same scope (e.g., same sheet). Resolve duplicates by appending a unique suffix (e.g., row index or counter).
+### Description: Format the generated script into a successful HTTP response.
 ### Details:
-This task builds on the header naming logic. It requires tracking generated names and identifying collisions. Resolution should follow the rule of appending the row index or a counter (e.g., 'revenue_q2_1', 'revenue_q2_2'). Test cases should include sheets with multiple columns having the exact same header text, or headers that resolve to the same snake_case name after cleaning.
+Define a Pydantic model for the successful response body (e.g., `{'script': '...'}`). Return an `HTTPResponse` with status code 200 and the generated script formatted according to the model.
 
-## 8. Ensure Cross-Sheet Naming Consistency [pending]
-### Dependencies: 11.6, 11.7
-### Description: Extend the naming logic to ensure that variables representing the same conceptual data (e.g., a column header 'Revenue') are named consistently across different sheets where possible, or that cross-sheet references correctly map to the appropriate sheet-scoped variable.
+## 8. Implement Specific Error Handling [done]
+### Dependencies: 11.6
+### Description: Catch specific exceptions raised by the parsing, evaluation, and generation steps and map them to appropriate HTTP exceptions.
 ### Details:
-This requires a mechanism to potentially map headers or named ranges across sheets. If a header 'Revenue' appears on 'Sheet1' and 'Sheet2', ideally the variable name should be consistent, or references should clearly indicate the sheet (e.g., 'Sheet1_revenue', 'Sheet2_revenue'). Test cases should involve workbooks with identical or similar column headers on multiple sheets, and formulas referencing cells on other sheets.
+Wrap the calls to parsing, evaluation, and generation functions in `try...except` blocks. Catch known custom exceptions from these modules. Raise `HTTPException` with relevant status codes (e.g., 422 Unprocessable Entity, 500 Internal Server Error) and detail messages based on the caught exception.
+
+## 9. Define and Implement Error Response Format [done]
+### Dependencies: 11.8
+### Description: Ensure consistent formatting for all error responses.
+### Details:
+Define a Pydantic model for error responses (e.g., `{'detail': 'Error message', 'code': 'specific_error_code'}`). Ensure that all `HTTPException` instances raised (including those from validation in step 3 and specific errors in step 8) return a response body conforming to this model.
+
+## 10. Add API Documentation and Final Review [done]
+### Dependencies: 11.7, 11.9
+### Description: Add docstrings and type hints for OpenAPI documentation and perform a final review of security considerations.
+### Details:
+Add docstrings to the endpoint function describing its purpose, parameters, and responses. Use type hints extensively. FastAPI automatically generates OpenAPI docs from this. Review implemented security measures (validation, error handling) and consider any missing aspects like rate limiting (though not required for this task, note it if applicable).
 
